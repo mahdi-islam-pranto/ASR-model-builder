@@ -7,3 +7,4 @@ nemo_toolkit[asr]
 librosa
 soundfile
 jiwer
+onnxruntime          # IndicConformer (ONNX) runner
