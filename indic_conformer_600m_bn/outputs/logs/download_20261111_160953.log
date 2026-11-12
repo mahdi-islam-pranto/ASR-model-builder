@@ -1,0 +1,6 @@
+16:09:53 [INFO] Log file: D:\python projects\ASR-models\indic_conformer_600m_bn\outputs\logs\download_20261111_160953.log
+16:09:54 [INFO] Variant   : int8
+16:09:54 [INFO] Repo      : yashwork-byte/indic-conformer-600m-int8-onnx
+16:09:54 [INFO] Target dir: D:\python projects\ASR-models\indic_conformer_600m_bn\model\int8
+17:53:08 [INFO] Downloaded 759 MB in 6193s
+17:53:08 [INFO] Done. Next: python test_model.py --variant int8

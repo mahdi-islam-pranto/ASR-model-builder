@@ -1,0 +1,7 @@
+14:00:09 [INFO] Log file: D:\python projects\ASR-models\titu_stt_bn_fastconformer\outputs\logs\download_20261111_140009.log
+14:00:09 [INFO] Repo      : hishab/titu_stt_bn_fastconformer
+14:00:09 [INFO] Target dir: D:\python projects\ASR-models\titu_stt_bn_fastconformer\model
+14:00:09 [INFO] [download] titu_stt_bn_fastconformer.nemo ...
+14:51:00 [INFO] [ok] titu_stt_bn_fastconformer.nemo  463.2 MB in 3050.8s
+14:51:00 [INFO] [skip] test_bn_fastconformer.wav already exists (0.5 MB)
+14:51:00 [INFO] Done. Next: python test_model.py

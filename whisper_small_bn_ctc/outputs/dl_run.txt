@@ -1,0 +1,7 @@
+12:16:47 [INFO] Log file: D:\python projects\ASR-models\whisper_small_bn_ctc\outputs\logs\download_20261112_121647.log
+12:16:49 [INFO] Repo      : Noobbbbb/whisper-small-bn-ctc
+12:16:49 [INFO] Target dir: D:\python projects\ASR-models\whisper_small_bn_ctc\model
+Fetching 7 files:   0%|          | 0/7 [00:00<?, ?it/s]Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+Fetching 7 files: 100%|##########| 7/7 [07:30<00:00, 64.43s/it]Fetching 7 files: 100%|##########| 7/7 [07:30<00:00, 64.43s/it]
+12:24:21 [INFO] Model folder: 205 MB, downloaded in 451s
+12:24:21 [INFO] Done. Next: python test_model.py

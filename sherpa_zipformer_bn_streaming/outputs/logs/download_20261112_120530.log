@@ -1,0 +1,5 @@
+12:05:30 [INFO] Log file: D:\python projects\ASR-models\sherpa_zipformer_bn_streaming\outputs\logs\download_20261112_120530.log
+12:05:32 [INFO] Repo      : alphacep/vosk-model-small-streaming-bn
+12:05:32 [INFO] Target dir: D:\python projects\ASR-models\sherpa_zipformer_bn_streaming\model
+12:09:31 [INFO] Model folder: 94 MB, downloaded in 239s
+12:09:31 [INFO] Done. Next: python test_model.py

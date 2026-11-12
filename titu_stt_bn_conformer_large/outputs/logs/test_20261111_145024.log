@@ -1,0 +1,15 @@
+14:50:24 [INFO] Log file: D:\python projects\ASR-models\titu_stt_bn_conformer_large\outputs\logs\test_20261111_145024.log
+14:50:24 [INFO] ======================================================================
+14:50:24 [INFO] Model: titu_stt_bn_conformer_large | device: CPU | threads: 12 | chunk: 30.0s
+14:50:29 [INFO] torch 2.15.0+cpu | python 3.14.10
+14:50:29 [INFO] Found 2 audio file(s)
+14:50:29 [ERROR] Model load failed: ModuleNotFoundError: No module named 'nemo'
+14:50:29 [DEBUG] Traceback:
+Traceback (most recent call last):
+  File "D:\python projects\ASR-models\titu_stt_bn_conformer_large\test_model.py", line 246, in main
+    model = load_model(log)
+  File "D:\python projects\ASR-models\titu_stt_bn_conformer_large\test_model.py", line 119, in load_model
+    import nemo.collections.asr as nemo_asr
+ModuleNotFoundError: No module named 'nemo'
+
+14:50:29 [ERROR] Full traceback in D:\python projects\ASR-models\titu_stt_bn_conformer_large\outputs\logs

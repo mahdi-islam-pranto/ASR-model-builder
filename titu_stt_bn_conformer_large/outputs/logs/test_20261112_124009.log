@@ -1,0 +1,25 @@
+12:40:09 [INFO] Log file: D:\python projects\ASR-models\titu_stt_bn_conformer_large\outputs\logs\test_20261112_124009.log
+12:40:09 [INFO] ======================================================================
+12:40:09 [INFO] Model: titu_stt_bn_conformer_large | device: CPU | threads: 12 | chunk: 30.0s
+12:40:13 [INFO] torch 2.15.0+cpu | python 3.12.16
+12:40:13 [INFO] Found 2 audio file(s)
+12:40:59 [INFO] Loading model titu_stt_bn_conformer_large.nemo (CPU) ...
+12:41:06 [INFO] Model loaded in 6.4s  | class=EncDecCTCModelBPE | params=121.5M
+12:41:06 [INFO] Decoding strategy: greedy_batch
+12:41:06 [INFO] ----------------------------------------------------------------------
+12:41:06 [INFO] File: ai voice.mp3
+12:41:07 [INFO] Duration: 8.07s | chunks: 1
+12:41:09 [INFO] Inference: 2.12s | RTF: 0.263
+12:41:09 [INFO] TRANSCRIPT:
+আইহেল্পো বিডি থেকে আপনার অর্ডারটি সফলভাবে গ্রহণ করা হয়েছে আমাদের সাথে কেনাকাটা করার জন্য আপনাকে ধন্যবাদ
+12:41:09 [INFO] ----------------------------------------------------------------------
+12:41:09 [INFO] File: call center call recording.mp3
+12:41:09 [INFO] Duration: 110.88s | chunks: 4
+12:41:28 [INFO] Inference: 18.13s | RTF: 0.164
+12:41:28 [INFO] TRANSCRIPT:
+এ সময় দিব না আমি চেক করছি স্যার ইচছে ডকুমেন্টসন না কিন্তু ডকুমেন্ট ছোট্ট একটা খাম যাবে ছয় হাজার একশো পঞ্চাশ টাকার মতো লাগবে সার ছয় হাজার একশো পঞ্চাশ অনে কাল হ্যাঁ আা ন্যতম র তাই আচ পিয়াজ ওকংক ত
+12:41:28 [INFO] ======================================================================
+12:41:28 [INFO] SUMMARY: 2 ok, 0 failed
+12:41:28 [INFO] Total audio 118.9s | total inference 20.3s | overall RTF 0.170
+12:41:28 [INFO] Results: D:\python projects\ASR-models\titu_stt_bn_conformer_large\outputs\results_20261112_124009.txt
+12:41:28 [INFO] JSON   : D:\python projects\ASR-models\titu_stt_bn_conformer_large\outputs\results_20261112_124009.json

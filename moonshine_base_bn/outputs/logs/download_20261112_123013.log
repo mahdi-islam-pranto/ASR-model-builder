@@ -1,0 +1,5 @@
+12:30:13 [INFO] Log file: D:\python projects\ASR-models\moonshine_base_bn\outputs\logs\download_20261112_123013.log
+12:30:13 [INFO] Repo      : Sanjidh090/moonshine-base-bn
+12:30:13 [INFO] Target dir: D:\python projects\ASR-models\moonshine_base_bn\model
+12:39:03 [INFO] Model folder: 246 MB, downloaded in 529s
+12:39:03 [INFO] Done. Next: python test_model.py

@@ -1,0 +1,34 @@
+12:14:22 [INFO] Log file: D:\python projects\ASR-models\sherpa_zipformer_bn_streaming\outputs\logs\test_20261112_121422.log
+12:14:22 [INFO] ======================================================================
+12:14:22 [INFO] Model: sherpa_zipformer_bn_streaming | decoding: modified_beam_search | CPU threads: 4 | piece: 0.1s | endpoint: True
+12:14:22 [INFO] sherpa-onnx 2.0.1 | python 3.12.16
+12:14:22 [INFO] Found 2 audio file(s)
+12:14:24 [INFO] Model loaded in 2.0s
+12:14:24 [INFO] ----------------------------------------------------------------------
+12:14:24 [INFO] File: ai voice.mp3
+12:14:30 [INFO] Duration: 8.07s
+12:14:31 [INFO] Inference: 1.60s | RTF: 0.199 | segments: 2
+12:14:31 [INFO] SEGMENTS:
+  [   0.00 -    4.70] আয় হেল্প বিডি থেকে আপনার অর্ডারটি সফলভাবে গ্রহণ করা হয়েছে
+  [   4.70 -    8.07] আমাদের সাথে কেনাকাটা করার জন্য আপনাকে ধন্যবাদ
+12:14:31 [INFO] TRANSCRIPT:
+আয় হেল্প বিডি থেকে আপনার অর্ডারটি সফলভাবে গ্রহণ করা হয়েছে আমাদের সাথে কেনাকাটা করার জন্য আপনাকে ধন্যবাদ
+12:14:31 [INFO] ----------------------------------------------------------------------
+12:14:31 [INFO] File: call center call recording.mp3
+12:14:31 [INFO] Duration: 110.88s
+12:14:53 [INFO] Inference: 21.69s | RTF: 0.196 | segments: 7
+12:14:53 [INFO] SEGMENTS:
+  [   7.90 -   12.40] অনেক লুস বলছিলেন ফেডারেস্টমার সার্ভিস থেকে
+  [  14.90 -   17.50] যে আমার একটা ফেন্স
+  [  17.50 -   21.30] শুধু কিছু কাগজ যাবে
+  [  29.00 -   33.50] চেক করছি স্যার
+  [  46.30 -   54.00] ডকুমেন্টসন না তুই ডকুই ছোট্ট একটা খাম যাবে এতটাকে ছয় হাজার একশো পঞ্চাশ টাকা মতো লাগছে
+  [  54.00 -   57.20] একশো পঞ্চাশ
+  [  57.20 -   61.60] ন্যূনতম রেট
+12:14:53 [INFO] TRANSCRIPT:
+অনেক লুস বলছিলেন ফেডারেস্টমার সার্ভিস থেকে যে আমার একটা ফেন্স শুধু কিছু কাগজ যাবে চেক করছি স্যার ডকুমেন্টসন না তুই ডকুই ছোট্ট একটা খাম যাবে এতটাকে ছয় হাজার একশো পঞ্চাশ টাকা মতো লাগছে একশো পঞ্চাশ ন্যূনতম রেট
+12:14:53 [INFO] ======================================================================
+12:14:53 [INFO] SUMMARY: 2 ok, 0 failed | model load 2.0s
+12:14:53 [INFO] Total audio 118.9s | inference 23.3s | overall RTF 0.196
+12:14:53 [INFO] Results: D:\python projects\ASR-models\sherpa_zipformer_bn_streaming\outputs\results_20261112_121422.txt
+12:14:53 [INFO] JSON   : D:\python projects\ASR-models\sherpa_zipformer_bn_streaming\outputs\results_20261112_121422.json

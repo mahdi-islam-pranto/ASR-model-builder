@@ -1,0 +1,8 @@
+13:06:41 [INFO] Log file: D:\python projects\ASR-models\titu_stt_bn_conformer_large\outputs\logs\download_20261111_130641.log
+13:06:41 [INFO] Repo      : hishab/titu_stt_bn_conformer_large
+13:06:41 [INFO] Target dir: D:\python projects\ASR-models\titu_stt_bn_conformer_large\model
+13:06:41 [INFO] [download] titu_stt_bn_conformer_large.nemo ...
+13:28:46 [INFO] [ok] titu_stt_bn_conformer_large.nemo  486.7 MB in 1324.9s
+13:28:46 [INFO] [download] test_bn_conformer.wav ...
+13:28:48 [INFO] [ok] test_bn_conformer.wav  0.5 MB in 1.7s
+13:28:48 [INFO] Done. Next: python test_model.py

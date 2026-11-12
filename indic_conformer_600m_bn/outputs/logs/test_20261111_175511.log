@@ -1,0 +1,18 @@
+17:55:11 [INFO] Log file: D:\python projects\ASR-models\indic_conformer_600m_bn\outputs\logs\test_20261111_175511.log
+17:55:11 [INFO] ======================================================================
+17:55:11 [INFO] Model: indic_conformer_600m_bn (int8) | decoding: ctc | CPU threads: 12 | chunk: 30.0s
+17:55:15 [INFO] onnxruntime 1.31.1 | torch 2.15.0+cpu | python 3.12.16
+17:55:15 [INFO] Found 1 audio file(s)
+17:55:15 [INFO] Loading model from D:\python projects\ASR-models\indic_conformer_600m_bn\model\int8 ...
+17:55:25 [INFO] Model loaded in 9.7s
+17:55:25 [INFO] ----------------------------------------------------------------------
+17:55:25 [INFO] File: ai voice.mp3
+17:55:27 [INFO] Duration: 8.07s | chunks: 1
+17:55:29 [INFO] [CTC] Inference: 1.98s | RTF: 0.245
+17:55:29 [INFO] [CTC] TRANSCRIPT:
+আই হেল্প বিডি থেকে আপনার অর্ডারটি সফলভাবে গ্রহণ করা হয়েছে আমাদের সাথে কেনাকাটা করার জন্য আপনাকে ধন্যবাদ
+17:55:29 [INFO] ======================================================================
+17:55:29 [INFO] SUMMARY: 1 ok, 0 failed | model load 9.7s
+17:55:29 [INFO] [CTC] total audio 8.1s | inference 2.0s | overall RTF 0.245
+17:55:29 [INFO] Results: D:\python projects\ASR-models\indic_conformer_600m_bn\outputs\results_int8_20261111_175511.txt
+17:55:29 [INFO] JSON   : D:\python projects\ASR-models\indic_conformer_600m_bn\outputs\results_int8_20261111_175511.json

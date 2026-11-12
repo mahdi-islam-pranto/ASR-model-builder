@@ -1,0 +1,20 @@
+{
+  "model": "indic_conformer_600m_bn",
+  "variant": "int8",
+  "threads": 12,
+  "chunk_sec": 30.0,
+  "load_sec": 9.75,
+  "results": [
+    {
+      "file": "ai voice.mp3",
+      "status": "ok",
+      "duration_sec": 8.07,
+      "chunks": 1,
+      "ctc": {
+        "text": "আই হেল্প বিডি থেকে আপনার অর্ডারটি সফলভাবে গ্রহণ করা হয়েছে আমাদের সাথে কেনাকাটা করার জন্য আপনাকে ধন্যবাদ",
+        "inference_sec": 1.977,
+        "rtf": 0.245
+      }
+    }
+  ]
+}

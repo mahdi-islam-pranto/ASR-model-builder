@@ -1,0 +1,24 @@
+12:24:21 [INFO] Log file: D:\python projects\ASR-models\whisper_small_bn_ctc\outputs\logs\test_20261112_122421.log
+12:24:21 [INFO] ======================================================================
+12:24:21 [INFO] Model: whisper_small_bn_ctc (greedy CTC) | CPU threads: 12 | chunk: 30.0s
+12:24:24 [INFO] torch 2.15.0+cpu | python 3.12.16
+12:24:24 [INFO] Found 2 audio file(s)
+12:24:24 [INFO] Loading model from D:\python projects\ASR-models\whisper_small_bn_ctc\model ...
+12:24:38 [INFO] Model loaded in 13.3s | params=102.4M
+12:24:38 [INFO] ----------------------------------------------------------------------
+12:24:38 [INFO] File: ai voice.mp3
+12:24:39 [INFO] Duration: 8.07s | chunks: 1
+12:24:40 [INFO] Inference: 1.73s | RTF: 0.214
+12:24:40 [INFO] TRANSCRIPT:
+আইহেল্প বিডি থেকে আপনার অর্ডারটি সফলভাবে গ্রহণ করা হয়েছেআমাদের সাথে কেনাকাটা করার জন্য আপনাকে ধন্যাবাদ
+12:24:40 [INFO] ----------------------------------------------------------------------
+12:24:40 [INFO] File: call center call recording.mp3
+12:24:40 [INFO] Duration: 110.88s | chunks: 4
+12:24:48 [INFO] Inference: 7.27s | RTF: 0.066
+12:24:48 [INFO] TRANSCRIPT:
+ু ফেযা প ফ সয় দিবেন মি চেক করছি সক ট রঞ্চশ টাাতো ছঞচ ত পি
+12:24:48 [INFO] ======================================================================
+12:24:48 [INFO] SUMMARY: 2 ok, 0 failed | model load 13.3s
+12:24:48 [INFO] Total audio 118.9s | inference 9.0s | overall RTF 0.076
+12:24:48 [INFO] Results: D:\python projects\ASR-models\whisper_small_bn_ctc\outputs\results_20261112_122421.txt
+12:24:48 [INFO] JSON   : D:\python projects\ASR-models\whisper_small_bn_ctc\outputs\results_20261112_122421.json

@@ -30,6 +30,25 @@ from pathlib import Path
 # Xet (HF's newer transfer backend) can hang at 0 bytes; plain HTTP is reliable
 os.environ.setdefault("HF_HUB_DISABLE_XET", "1")
 
+
+def load_dotenv(path: Path) -> None:
+    """Read KEY=VALUE lines from the repo's .env into os.environ (existing vars win).
+    Tiny parser so no extra dependency is needed; values are never printed."""
+    if not path.exists():
+        return
+    for line in path.read_text(encoding="utf-8").splitlines():
+        line = line.strip()
+        if not line or line.startswith("#") or "=" not in line:
+            continue
+        key, value = line.split("=", 1)
+        key = key.strip().removeprefix("export ").strip()
+        value = value.strip().strip('"').strip("'")
+        if key and value:
+            os.environ.setdefault(key, value)
+
+
+load_dotenv(Path(__file__).resolve().parent.parent / ".env")
+
 VARIANTS = {
     "int8": "yashwork-byte/indic-conformer-600m-int8-onnx",
     "fp32": "ai4bharat/indic-conformer-600m-multilingual",

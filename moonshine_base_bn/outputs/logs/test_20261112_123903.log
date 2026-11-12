@@ -1,0 +1,24 @@
+12:39:03 [INFO] Log file: D:\python projects\ASR-models\moonshine_base_bn\outputs\logs\test_20261112_123903.log
+12:39:03 [INFO] ======================================================================
+12:39:03 [INFO] Model: moonshine_base_bn (beam search, beams=5) | CPU threads: 12 | chunk: 20.0s
+12:39:08 [INFO] torch 2.15.0+cpu | python 3.12.16
+12:39:08 [INFO] Found 2 audio file(s)
+12:39:08 [INFO] Loading model from D:\python projects\ASR-models\moonshine_base_bn\model ...
+12:39:25 [INFO] Model loaded in 17.4s | params=61.2M
+12:39:25 [INFO] ----------------------------------------------------------------------
+12:39:25 [INFO] File: ai voice.mp3
+12:39:27 [INFO] Duration: 8.07s | chunks: 1
+12:39:30 [INFO] Inference: 2.37s | RTF: 0.294
+12:39:30 [INFO] TRANSCRIPT:
+আই হেলপও বিডি থেকে আপনার অর্ডারটি সফলভাবে গ্রহণ করা হয়েছে আমাদের সাথে কেনাকাটা করার জন্য আপনাকে ধন্যবাদ
+12:39:30 [INFO] ----------------------------------------------------------------------
+12:39:30 [INFO] File: call center call recording.mp3
+12:39:30 [INFO] Duration: 110.88s | chunks: 6
+12:39:52 [INFO] Inference: 22.52s | RTF: 0.203
+12:39:52 [INFO] TRANSCRIPT:
+মিউজিক গুড মর্নিং লুজ বুঝি না টেস্ট কাস্টমার সার্ভিস থাকে আলাইকুম ওয়ালাইকুম আসসালাম ওযে আমার একটা ফেল ফেলবি নিয়ে তো একটা থাম যা জারি থাম শুধু কিছু কাগজ যাবে করে করতে পারে একটু চার্জ না ইউএসএতে না ইউএসতে ইউএসতে ছিলেন ফেলবে নিয়ে আচ্ছা একটা সময় দিবেন আমি চেক মিউজিক কি হইছে কি হইছেটুকু মেনছেন না কিন্তুটুকু এই ছোট্ট একটা খাম যাবে সোয়াার 150 টাকা মত লাগবে স্যার 150 100 25 অনেক চাল হ্যাঁ আমাদের নূন তোমার এই আচ্ছা প্লিজ ওকে থ্যাংক ইউ মিউজিক মিউজিক মিউজিক কালকে এটা মদনু ওই জন্য এদিকে এসো একেবারে এসো আল্লাহু আকবার সশব্দ হাসি মিউজিক
+12:39:52 [INFO] ======================================================================
+12:39:52 [INFO] SUMMARY: 2 ok, 0 failed | model load 17.4s
+12:39:52 [INFO] Total audio 118.9s | inference 24.9s | overall RTF 0.209
+12:39:52 [INFO] Results: D:\python projects\ASR-models\moonshine_base_bn\outputs\results_20261112_123903.txt
+12:39:52 [INFO] JSON   : D:\python projects\ASR-models\moonshine_base_bn\outputs\results_20261112_123903.json

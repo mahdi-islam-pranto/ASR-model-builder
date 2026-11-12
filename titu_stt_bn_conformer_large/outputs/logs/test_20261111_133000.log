@@ -1,0 +1,91 @@
+13:30:00 [INFO] Log file: D:\python projects\ASR-models\titu_stt_bn_conformer_large\outputs\logs\test_20261111_133000.log
+13:30:00 [INFO] ======================================================================
+13:30:00 [INFO] Model: titu_stt_bn_conformer_large | device: CPU | threads: 12 | chunk: 30.0s
+13:30:05 [INFO] torch 2.15.0+cpu | python 3.12.16
+13:30:05 [INFO] Found 2 audio file(s)
+13:30:36 [INFO] Loading model titu_stt_bn_conformer_large.nemo (CPU) ...
+13:30:39 [INFO] Tokenizer SentencePieceTokenizer initialized with 128 tokens
+13:30:39 [WARNING] If you intend to do training or fine-tuning, please call the ModelPT.setup_training_data() method and provide a valid configuration file to setup the train data loader.
+Train config : 
+manifest_filepath: /workspace/datasets/bangla-open-asr-data/bangla_open_asr_manifests/non-telephony-all-train-val.json
+sample_rate: 16000
+batch_size: 32
+shuffle: true
+num_workers: 8
+pin_memory: true
+use_start_end_token: true
+trim_silence: false
+max_duration: 30.0
+min_duration: 0.1
+is_tarred: false
+tarred_audio_filepaths:
+- - /data2/nemo_asr/nemo_asr_set_3.0/bucket1/audio__OP_0..8191_CL_.tar
+- - /data2/nemo_asr/nemo_asr_set_3.0/bucket2/audio__OP_0..8191_CL_.tar
+- - /data2/nemo_asr/nemo_asr_set_3.0/bucket3/audio__OP_0..8191_CL_.tar
+- - /data2/nemo_asr/nemo_asr_set_3.0/bucket4/audio__OP_0..8191_CL_.tar
+- - /data2/nemo_asr/nemo_asr_set_3.0/bucket5/audio__OP_0..8191_CL_.tar
+- - /data2/nemo_asr/nemo_asr_set_3.0/bucket6/audio__OP_0..8191_CL_.tar
+- - /data2/nemo_asr/nemo_asr_set_3.0/bucket7/audio__OP_0..8191_CL_.tar
+- - /data2/nemo_asr/nemo_asr_set_3.0/bucket8/audio__OP_0..8191_CL_.tar
+shuffle_n: 2048
+bucketing_strategy: synced_randomized
+bucketing_batch_size:
+- 34
+- 30
+- 26
+- 22
+- 18
+- 16
+- 12
+- 8
+
+13:30:39 [WARNING] If you intend to do validation, please call the ModelPT.setup_validation_data() or ModelPT.setup_multiple_validation_data() method and provide a valid configuration file to setup the validation data loader(s). 
+Validation config : 
+manifest_filepath: /workspace/datasets/bangla-open-asr-data/bangla_open_asr_manifests/non-telephony-all-test.json
+sample_rate: 16000
+batch_size: 8
+shuffle: false
+num_workers: 8
+pin_memory: false
+use_start_end_token: true
+trim_silence: true
+max_duration: 30.0
+
+13:30:39 [WARNING] Please call the ModelPT.setup_test_data() or ModelPT.setup_multiple_test_data() method and provide a valid configuration file to setup the test data loader(s).
+Test config : 
+manifest_filepath: /workspace/datasets/bangla-open-asr-data/bangla_open_asr_manifests/non-telephony-all-test.json
+sample_rate: 16000
+batch_size: 4
+shuffle: false
+num_workers: 4
+pin_memory: false
+use_start_end_token: true
+trim_silence: true
+
+13:30:43 [INFO] Model EncDecCTCModelBPE was successfully restored from D:\python projects\ASR-models\titu_stt_bn_conformer_large\model\titu_stt_bn_conformer_large.nemo.
+13:30:43 [INFO] Model loaded in 6.4s  | class=EncDecCTCModelBPE | params=121.5M
+13:30:43 [INFO] ----------------------------------------------------------------------
+13:30:43 [INFO] File: ai voice.mp3
+13:30:44 [INFO] Duration: 8.07s | chunks: 1
+13:30:44 [WARNING] The following configuration keys are ignored by Lhotse dataloader: use_start_end_token
+13:30:44 [WARNING] You are using a non-tarred dataset and requested tokenization during data sampling (pretokenize=True). This will cause the tokenization to happen in the main (GPU) process,possibly impacting the training speed if your tokenizer is very large.If the impact is noticable, set pretokenize=False in dataloader config.(note: that will disable token-per-second filtering and 2D bucketing features)
+13:30:44 [WARNING] D:\python projects\ASR-models\.venv\Lib\site-packages\torch\utils\data\dataloader.py:759: UserWarning: 'pin_memory' argument is set as true but no accelerator is found, then device pinned memory won't be used.
+  super().__init__(loader)
+
+13:30:46 [WARNING] CTC decoding strategy 'greedy' is slower than 'greedy_batch', which implements the same exact interface. Consider changing your strategy to 'greedy_batch' for a free performance improvement.
+13:30:46 [INFO] Inference: 2.26s | RTF: 0.279
+13:30:46 [INFO] TRANSCRIPT:
+আইহেল্পো বিডি থেকে আপনার অর্ডারটি সফলভাবে গ্রহণ করা হয়েছে আমাদের সাথে কেনাকাটা করার জন্য আপনাকে ধন্যবাদ
+13:30:46 [INFO] ----------------------------------------------------------------------
+13:30:46 [INFO] File: call center call recording.mp3
+13:30:47 [INFO] Duration: 110.88s | chunks: 4
+13:30:47 [WARNING] The following configuration keys are ignored by Lhotse dataloader: use_start_end_token
+13:30:47 [WARNING] You are using a non-tarred dataset and requested tokenization during data sampling (pretokenize=True). This will cause the tokenization to happen in the main (GPU) process,possibly impacting the training speed if your tokenizer is very large.If the impact is noticable, set pretokenize=False in dataloader config.(note: that will disable token-per-second filtering and 2D bucketing features)
+13:31:15 [INFO] Inference: 28.67s | RTF: 0.259
+13:31:15 [INFO] TRANSCRIPT:
+এ সময় দিব না আমি চেক করছি স্যার ইচছে ডকুমেন্টসন না কিন্তু ডকুমেন্ট ছোট্ট একটা খাম যাবে ছয় হাজার একশো পঞ্চাশ টাকার মতো লাগবে সার ছয় হাজার একশো পঞ্চাশ অনে কাল হ্যাঁ আা ন্যতম র তাই আচ পিয়াজ ওকংক ত
+13:31:15 [INFO] ======================================================================
+13:31:15 [INFO] SUMMARY: 2 ok, 0 failed
+13:31:15 [INFO] Total audio 118.9s | total inference 30.9s | overall RTF 0.260
+13:31:15 [INFO] Results: D:\python projects\ASR-models\titu_stt_bn_conformer_large\outputs\results_20261111_133000.txt
+13:31:15 [INFO] JSON   : D:\python projects\ASR-models\titu_stt_bn_conformer_large\outputs\results_20261111_133000.json

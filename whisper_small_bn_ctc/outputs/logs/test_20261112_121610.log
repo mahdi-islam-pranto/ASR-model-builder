@@ -1,0 +1,19 @@
+12:16:10 [INFO] Log file: D:\python projects\ASR-models\whisper_small_bn_ctc\outputs\logs\test_20261112_121610.log
+12:16:10 [INFO] ======================================================================
+12:16:10 [INFO] Model: whisper_small_bn_ctc (greedy CTC) | CPU threads: 12 | chunk: 30.0s
+12:16:17 [INFO] torch 2.15.0+cpu | python 3.12.16
+12:16:17 [INFO] Found 2 audio file(s)
+12:16:17 [INFO] Loading model from D:\python projects\ASR-models\whisper_small_bn_ctc\model ...
+12:16:27 [ERROR] Model load failed: FileNotFoundError: encoder.safetensors not found in D:\python projects\ASR-models\whisper_small_bn_ctc\model. Run download_model.py
+12:16:27 [DEBUG] Traceback:
+Traceback (most recent call last):
+  File "D:\python projects\ASR-models\whisper_small_bn_ctc\test_model.py", line 157, in main
+    model = load_model(args)
+            ^^^^^^^^^^^^^^^^
+  File "D:\python projects\ASR-models\whisper_small_bn_ctc\test_model.py", line 54, in load_model
+    return WhisperCTC(MODEL_DIR, threads=args.threads)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\python projects\ASR-models\whisper_small_bn_ctc\whisper_ctc.py", line 61, in __init__
+    raise FileNotFoundError(f"encoder.safetensors not found in {path}. Run download_model.py")
+FileNotFoundError: encoder.safetensors not found in D:\python projects\ASR-models\whisper_small_bn_ctc\model. Run download_model.py
+

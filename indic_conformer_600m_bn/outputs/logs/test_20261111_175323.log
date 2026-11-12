@@ -1,0 +1,31 @@
+17:53:23 [INFO] Log file: D:\python projects\ASR-models\indic_conformer_600m_bn\outputs\logs\test_20261111_175323.log
+17:53:23 [INFO] ======================================================================
+17:53:23 [INFO] Model: indic_conformer_600m_bn (int8) | decoding: ctc+rnnt | CPU threads: 12 | chunk: 30.0s
+17:53:30 [INFO] onnxruntime 1.31.1 | torch 2.15.0+cpu | python 3.12.16
+17:53:30 [INFO] Found 2 audio file(s)
+17:53:30 [INFO] Loading model from D:\python projects\ASR-models\indic_conformer_600m_bn\model\int8 ...
+17:53:41 [INFO] Model loaded in 11.2s
+17:53:41 [INFO] ----------------------------------------------------------------------
+17:53:41 [INFO] File: ai voice.mp3
+17:53:48 [INFO] Duration: 8.07s | chunks: 1
+17:53:50 [INFO] [CTC] Inference: 2.18s | RTF: 0.270
+17:53:50 [INFO] [CTC] TRANSCRIPT:
+আই হেল্প বিডি থেকে আপনার অর্ডারটি সফলভাবে গ্রহণ করা হয়েছে আমাদের সাথে কেনাকাটা করার জন্য আপনাকে ধন্যবাদ
+17:53:54 [INFO] [RNNT] Inference: 4.15s | RTF: 0.514
+17:53:54 [INFO] [RNNT] TRANSCRIPT:
+আই হেল্প বিডি থেকে আপনার অর্ডারটি সফলভাবে গ্রহণ করা হয়েছে আমাদের সাথে কেনাকাটা করার জন্য আপনাকে ধন্যবাদ
+17:53:54 [INFO] ----------------------------------------------------------------------
+17:53:54 [INFO] File: call center call recording.mp3
+17:53:55 [INFO] Duration: 110.88s | chunks: 4
+17:54:22 [INFO] [CTC] Inference: 26.95s | RTF: 0.243
+17:54:22 [INFO] [CTC] TRANSCRIPT:
+সম আমি চে করছ ডকুমেন্টস নাুম্ট পা্াবে একশো পঞ্চাশ টাকা মকম হ্যা একশো পঞ্চাশয় হ্যাকে থ্যাংক ইউ
+17:54:53 [INFO] [RNNT] Inference: 30.74s | RTF: 0.277
+17:54:53 [INFO] [RNNT] TRANSCRIPT:
+আমি চেক করছি ডকুমেন্টস না ডকুমেন্টস একশো পঞ্চাশ টাকা মকুমেন্ট একশো পঞ্চাশ থ্যাংক ইউ
+17:54:53 [INFO] ======================================================================
+17:54:53 [INFO] SUMMARY: 2 ok, 0 failed | model load 11.2s
+17:54:53 [INFO] [CTC] total audio 118.9s | inference 29.1s | overall RTF 0.245
+17:54:53 [INFO] [RNNT] total audio 118.9s | inference 34.9s | overall RTF 0.293
+17:54:53 [INFO] Results: D:\python projects\ASR-models\indic_conformer_600m_bn\outputs\results_int8_20261111_175323.txt
+17:54:53 [INFO] JSON   : D:\python projects\ASR-models\indic_conformer_600m_bn\outputs\results_int8_20261111_175323.json

@@ -1,0 +1,95 @@
+12:12:56 [INFO] Log file: D:\python projects\ASR-models\moonshine_base_bn\outputs\logs\download_20261112_121256.log
+12:12:57 [INFO] Repo      : Sanjidh090/moonshine-base-bn
+12:12:57 [INFO] Target dir: D:\python projects\ASR-models\moonshine_base_bn\model
+12:12:57 [WARNING] This repo is gated. Open https://huggingface.co/Sanjidh090/moonshine-base-bn, click 'Agree and access repository', create a READ token at https://huggingface.co/settings/tokens and pass --token hf_xxx (or set HF_TOKEN).
+12:12:57 [ERROR] Download failed: LocalEntryNotFoundError: Got: ConnectError: [Errno 11001] getaddrinfo failed
+An error happened while trying to locate the files on the Hub, and we cannot find the appropriate snapshot folder for the specified revision on the local disk. Please check your internet connection and try again.
+12:12:57 [DEBUG] Traceback (most recent call last):
+  File "D:\python projects\ASR-models\.venv\Lib\site-packages\httpx2\_transports\default.py", line 98, in map_httpcore_exceptions
+    yield
+  File "D:\python projects\ASR-models\.venv\Lib\site-packages\httpx2\_transports\default.py", line 245, in handle_request
+    resp = self._pool.handle_request(req)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\python projects\ASR-models\.venv\Lib\site-packages\httpcore2\_sync\connection_pool.py", line 242, in handle_request
+    raise exc from None
+  File "D:\python projects\ASR-models\.venv\Lib\site-packages\httpcore2\_sync\connection_pool.py", line 224, in handle_request
+    response = connection.handle_request(pool_request.request)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\python projects\ASR-models\.venv\Lib\site-packages\httpcore2\_sync\connection.py", line 94, in handle_request
+    raise exc
+  File "D:\python projects\ASR-models\.venv\Lib\site-packages\httpcore2\_sync\connection.py", line 74, in handle_request
+    stream = self._connect(request)
+             ^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\python projects\ASR-models\.venv\Lib\site-packages\httpcore2\_sync\connection.py", line 117, in _connect
+    stream = self._network_backend.connect_tcp(**kwargs)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\python projects\ASR-models\.venv\Lib\site-packages\httpcore2\_backends\sync.py", line 203, in connect_tcp
+    with map_exceptions(exc_map):
+         ^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\U S E R\AppData\Roaming\uv\python\cpython-3.12-windows-x86_64-none\Lib\contextlib.py", line 158, in __exit__
+    self.gen.throw(value)
+  File "D:\python projects\ASR-models\.venv\Lib\site-packages\httpcore2\_exceptions.py", line 17, in map_exceptions
+    raise to_exc(exc) from exc
+httpcore2.ConnectError: [Errno 11001] getaddrinfo failed
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "D:\python projects\ASR-models\.venv\Lib\site-packages\huggingface_hub\_snapshot_download.py", line 279, in snapshot_download
+    repo_info = api.repo_info(repo_id=repo_id, repo_type=repo_type, revision=revision)
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\python projects\ASR-models\.venv\Lib\site-packages\huggingface_hub\utils\_validators.py", line 89, in _inner_fn
+    return fn(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^
+  File "D:\python projects\ASR-models\.venv\Lib\site-packages\huggingface_hub\hf_api.py", line 3535, in repo_info
+    return method(
+           ^^^^^^^
+  File "D:\python projects\ASR-models\.venv\Lib\site-packages\huggingface_hub\utils\_validators.py", line 89, in _inner_fn
+    return fn(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^
+  File "D:\python projects\ASR-models\.venv\Lib\site-packages\huggingface_hub\hf_api.py", line 3214, in model_info
+    r = get_session().get(path, headers=headers, timeout=timeout, params=params)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\python projects\ASR-models\.venv\Lib\site-packages\httpx2\_client.py", line 1112, in get
+    return self.request(
+           ^^^^^^^^^^^^^
+  File "D:\python projects\ASR-models\.venv\Lib\site-packages\httpx2\_client.py", line 796, in request
+    return self.send(request, auth=auth, follow_redirects=follow_redirects)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\python projects\ASR-models\.venv\Lib\site-packages\httpx2\_client.py", line 979, in send
+    response = self._send_handling_auth(
+               ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\python projects\ASR-models\.venv\Lib\site-packages\httpx2\_client.py", line 1007, in _send_handling_auth
+    response = self._send_handling_redirects(
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\python projects\ASR-models\.venv\Lib\site-packages\httpx2\_client.py", line 1042, in _send_handling_redirects
+    response = self._send_single_request(request)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\python projects\ASR-models\.venv\Lib\site-packages\httpx2\_client.py", line 1075, in _send_single_request
+    response = transport.handle_request(request)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\python projects\ASR-models\.venv\Lib\site-packages\httpx2\_transports\default.py", line 244, in handle_request
+    with map_httpcore_exceptions():
+         ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\U S E R\AppData\Roaming\uv\python\cpython-3.12-windows-x86_64-none\Lib\contextlib.py", line 158, in __exit__
+    self.gen.throw(value)
+  File "D:\python projects\ASR-models\.venv\Lib\site-packages\httpx2\_transports\default.py", line 115, in map_httpcore_exceptions
+    raise mapped_exc(message) from exc
+httpx2.ConnectError: [Errno 11001] getaddrinfo failed
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "D:\python projects\ASR-models\moonshine_base_bn\download_model.py", line 74, in main
+    snapshot_download(repo_id=REPO_ID, local_dir=MODEL_DIR, token=token,
+  File "D:\python projects\ASR-models\.venv\Lib\site-packages\huggingface_hub\utils\_validators.py", line 89, in _inner_fn
+    return fn(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^
+  File "D:\python projects\ASR-models\.venv\Lib\site-packages\huggingface_hub\utils\_http.py", line 276, in _inner
+    return fn(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^
+  File "D:\python projects\ASR-models\.venv\Lib\site-packages\huggingface_hub\_snapshot_download.py", line 400, in snapshot_download
+    raise LocalEntryNotFoundError(
+huggingface_hub.errors.LocalEntryNotFoundError: Got: ConnectError: [Errno 11001] getaddrinfo failed
+An error happened while trying to locate the files on the Hub, and we cannot find the appropriate snapshot folder for the specified revision on the local disk. Please check your internet connection and try again.
+

@@ -1,0 +1,38 @@
+{
+  "model": "yashwork-byte/indic-conformer-600m-int8-onnx",
+  "variant": "int8",
+  "decoding": [
+    "ctc",
+    "rnnt"
+  ],
+  "threads": 1,
+  "chunk_sec": 30,
+  "load_sec": 6.03,
+  "results": [
+    {
+      "file": "ai voice.mp3",
+      "status": "ok",
+      "duration_sec": 8.07,
+      "chunks": 1,
+      "ctc_sec": 2.68,
+      "ctc_rtf": 0.332,
+      "ctc_text": "আই হেল্প বিডি থেকে আপনার অর্ডারটি সফলভাবে গ্রহণ করা হয়েছে আমাদের সাথে কেনাকাটা করার জন্য আপনাকে ধন্যবাদ",
+      "rnnt_sec": 2.61,
+      "rnnt_rtf": 0.324,
+      "rnnt_text": "আই হেল্প বিডি থেকে আপনার অর্ডারটি সফলভাবে গ্রহণ করা হয়েছে আমাদের সাথে কেনাকাটা করার জন্য আপনাকে ধন্যবাদ"
+    },
+    {
+      "file": "call center call recording.mp3",
+      "status": "ok",
+      "duration_sec": 110.88,
+      "chunks": 4,
+      "ctc_sec": 40.31,
+      "ctc_rtf": 0.364,
+      "ctc_text": "আমি চে করছ ডকুমেন্টস নাম্ট পা্ একশো পঞ্চাশ টাকা মম হ্যাঁ একশো পঞ্চাশয় হ্যা হকে থ্যাংক ইউ",
+      "rnnt_sec": 39.55,
+      "rnnt_rtf": 0.357,
+      "rnnt_text": "আমি চেক করছি ডকুমেন্টস ডকুমেন্টস একশো পঞ্চাশ টাকা মকুমেন্ট একশো পঞ্চাশ থ্যাংক ইউ"
+    }
+  ],
+  "errors": []
+}

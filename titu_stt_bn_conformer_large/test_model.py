@@ -243,7 +243,9 @@ def main() -> int:
     log.info("Found %d audio file(s)", len(files))
 
     try:
+        t_load = time.time()
         model = load_model(log)
+        load_sec = time.time() - t_load
     except Exception as e:  # noqa: BLE001
         log_exception(log, "Model load failed", e)
         log.error("Full traceback in %s", LOG_DIR)
@@ -293,7 +295,7 @@ def main() -> int:
     OUT_DIR.mkdir(parents=True, exist_ok=True)
     json_path = OUT_DIR / f"results_{RUN_ID}.json"
     txt_path = OUT_DIR / f"results_{RUN_ID}.txt"
-    json_path.write_text(json.dumps({"model": MODEL_NAME, "threads": args.threads,
+    json_path.write_text(json.dumps({"model": MODEL_NAME, "threads": args.threads, "load_sec": round(load_sec, 2),
                                      "chunk_sec": args.chunk, "results": results},
                                     ensure_ascii=False, indent=2), encoding="utf-8")
     with txt_path.open("w", encoding="utf-8") as fh:

@@ -1,0 +1,25 @@
+{
+  "model": "titu_stt_bn_conformer_large",
+  "threads": 12,
+  "chunk_sec": 30.0,
+  "results": [
+    {
+      "file": "ai voice.mp3",
+      "status": "ok",
+      "load_audio_sec": 6.798,
+      "duration_sec": 8.07,
+      "text": "আইহেল্পো বিডি থেকে আপনার অর্ডারটি সফলভাবে গ্রহণ করা হয়েছে আমাদের সাথে কেনাকাটা করার জন্য আপনাকে ধন্যবাদ",
+      "inference_sec": 5.694,
+      "rtf": 0.705
+    },
+    {
+      "file": "call center call recording.mp3",
+      "status": "ok",
+      "load_audio_sec": 0.213,
+      "duration_sec": 110.88,
+      "text": "এ সময় দিব না আমি চেক করছি স্যার ইচছে ডকুমেন্টসন না কিন্তু ডকুমেন্ট ছোট্ট একটা খাম যাবে ছয় হাজার একশো পঞ্চাশ টাকার মতো লাগবে সার ছয় হাজার একশো পঞ্চাশ অনে কাল হ্যাঁ আা ন্যতম র তাই আচ পিয়াজ ওকংক ত",
+      "inference_sec": 25.865,
+      "rtf": 0.233
+    }
+  ]
+}

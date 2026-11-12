@@ -1,0 +1,12 @@
+13:31:44 [INFO] Log file: D:\python projects\ASR-models\titu_stt_bn_conformer_large\outputs\logs\test_20261111_133144.log
+13:31:44 [INFO] ======================================================================
+13:31:44 [INFO] Model: titu_stt_bn_conformer_large | device: CPU | threads: 12 | chunk: 30.0s
+13:31:53 [INFO] torch 2.15.0+cpu | python 3.12.16
+13:31:53 [INFO] Found 2 audio file(s)
+13:59:30 [WARNING] The following configuration keys are ignored by Lhotse dataloader: use_start_end_token
+13:59:31 [WARNING] You are using a non-tarred dataset and requested tokenization during data sampling (pretokenize=True). This will cause the tokenization to happen in the main (GPU) process,possibly impacting the training speed if your tokenizer is very large.If the impact is noticable, set pretokenize=False in dataloader config.(note: that will disable token-per-second filtering and 2D bucketing features)
+13:59:32 [WARNING] D:\python projects\ASR-models\.venv\Lib\site-packages\torch\utils\data\dataloader.py:759: UserWarning: 'pin_memory' argument is set as true but no accelerator is found, then device pinned memory won't be used.
+  super().__init__(loader)
+
+13:59:37 [WARNING] The following configuration keys are ignored by Lhotse dataloader: use_start_end_token
+13:59:37 [WARNING] You are using a non-tarred dataset and requested tokenization during data sampling (pretokenize=True). This will cause the tokenization to happen in the main (GPU) process,possibly impacting the training speed if your tokenizer is very large.If the impact is noticable, set pretokenize=False in dataloader config.(note: that will disable token-per-second filtering and 2D bucketing features)

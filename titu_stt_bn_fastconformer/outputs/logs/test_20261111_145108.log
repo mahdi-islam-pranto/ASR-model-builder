@@ -1,0 +1,25 @@
+14:51:08 [INFO] Log file: D:\python projects\ASR-models\titu_stt_bn_fastconformer\outputs\logs\test_20261111_145108.log
+14:51:08 [INFO] ======================================================================
+14:51:08 [INFO] Model: titu_stt_bn_fastconformer | device: CPU | threads: 12 | chunk: 30.0s
+14:51:11 [INFO] torch 2.15.0+cpu | python 3.12.16
+14:51:11 [INFO] Found 2 audio file(s)
+14:51:23 [INFO] Loading model titu_stt_bn_fastconformer.nemo (CPU) ...
+14:51:26 [INFO] Model loaded in 3.4s  | class=EncDecCTCModelBPE | params=115.6M
+14:51:26 [INFO] Decoding strategy: greedy_batch
+14:51:26 [INFO] ----------------------------------------------------------------------
+14:51:26 [INFO] File: ai voice.mp3
+14:51:27 [INFO] Duration: 8.07s | chunks: 1
+14:51:28 [INFO] Inference: 0.74s | RTF: 0.092
+14:51:28 [INFO] TRANSCRIPT:
+আই হেল্প বিডি থেকে আপনার অর্ডারটি সফলভাবে গ্রহণ করা হয়েছে আমাদের সাথে কেনাকাটা করার জন্য আপনাকে ধন্যবাদ
+14:51:28 [INFO] ----------------------------------------------------------------------
+14:51:28 [INFO] File: call center call recording.mp3
+14:51:28 [INFO] Duration: 110.88s | chunks: 4
+14:51:32 [INFO] Inference: 3.97s | RTF: 0.036
+14:51:32 [INFO] TRANSCRIPT:
+খুব ম অনেক লুুজ বলছিল আমি ফিট কাস্টমার সার্ভিস থেকে হ ও কম ওয়াল কিন্তু তাই আপনার ফোন দিয়েছিলাম  যে আমার একটা ফেন সেেল বি নিয়ে ত একটা আম যাবে আর আম শুধু কিছু কাগজ যাবে হ্যাঁ কেমন উঠতে পারে একটু চার্স না কি ইউএস তাই না ইউ ইউএস ফেন সেেলবে নিয়ে আছে একটু সময় দিবেন আমি চেক করছি স্যার হ্যাঁ প প হ ডকুমেন্ট স না কিন্তু ডো করে ছোট্ট একটা খাম যাবে ঠিক আছে ছয় হাজার একশ পঞ্চাশ টাকার মতো লাগবে স্যার ছয় হাজার একশ পঞ্চাশ ম চার হ্যাঁ স্যার আমাদের অন্য নতমট না হ্যা না না হ্যা না হ্যা আ আছে প আছে হ্যা হ্যা না হ ও আচ্ছ্যাঁ থ্যাং কেউ হঁ হ হ্যা হ হ্যাঁ হ্যা হ্যাঁ আছে আছে না্যা না হঁ আছে না না হ্যা না না না না না না না না্যাঁ না হ্যাঁ না আছে না না আছে না না না না না আছে না হ্যাঁ না তো না না না আছে হ্যা না না না না না যায় না না নাঁ আছে এক কে না না না না না না না না আছে না না না না না না না আছে না আছে না আছে না না না আছে না না না না না আছে না না না না নাঁ না
+14:51:32 [INFO] ======================================================================
+14:51:32 [INFO] SUMMARY: 2 ok, 0 failed
+14:51:32 [INFO] Total audio 118.9s | total inference 4.7s | overall RTF 0.040
+14:51:32 [INFO] Results: D:\python projects\ASR-models\titu_stt_bn_fastconformer\outputs\results_20261111_145108.txt
+14:51:32 [INFO] JSON   : D:\python projects\ASR-models\titu_stt_bn_fastconformer\outputs\results_20261111_145108.json
