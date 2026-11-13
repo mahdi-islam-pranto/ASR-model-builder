@@ -1,0 +1,58 @@
+16:52:09 [INFO] Log file: D:\python projects\ASR-models\indic_conformer_600m_bn\outputs\logs\test_20261112_165209.log
+16:52:09 [INFO] ======================================================================
+16:52:09 [INFO] Model: indic_conformer_600m_bn (int8) | decoding: ctc+rnnt | CPU threads: 12 | chunk: 30.0s
+16:52:11 [INFO] onnxruntime 1.31.1 | torch 2.15.0+cpu | python 3.12.16
+16:52:11 [INFO] Found 5 audio file(s)
+16:52:11 [INFO] Loading model from D:\python projects\ASR-models\indic_conformer_600m_bn\model\int8 ...
+16:52:16 [INFO] Model loaded in 4.7s
+16:52:16 [INFO] ----------------------------------------------------------------------
+16:52:16 [INFO] File: ai voice.mp3
+16:52:19 [INFO] Duration: 8.07s | chunks: 1
+16:52:19 [INFO] [CTC] Inference: 0.84s | RTF: 0.104
+16:52:19 [INFO] [CTC] TRANSCRIPT:
+আই হেল্প বিডি থেকে আপনার অর্ডারটি সফলভাবে গ্রহণ করা হয়েছে আমাদের সাথে কেনাকাটা করার জন্য আপনাকে ধন্যবাদ
+16:52:22 [INFO] [RNNT] Inference: 2.32s | RTF: 0.287
+16:52:22 [INFO] [RNNT] TRANSCRIPT:
+আই হেল্প বিডি থেকে আপনার অর্ডারটি সফলভাবে গ্রহণ করা হয়েছে আমাদের সাথে কেনাকাটা করার জন্য আপনাকে ধন্যবাদ
+16:52:22 [INFO] ----------------------------------------------------------------------
+16:52:22 [INFO] File: hospital inbound call center.mp3
+16:52:22 [INFO] Duration: 50.98s | chunks: 2
+16:52:29 [INFO] [CTC] Inference: 7.48s | RTF: 0.147
+16:52:29 [INFO] [CTC] TRANSCRIPT:
+চ্ সম্পর্কে আপনার কোন কোন অশ কোন আছে আছেচ্ ঠিক আছে
+16:52:37 [INFO] [RNNT] Inference: 8.18s | RTF: 0.160
+16:52:37 [INFO] [RNNT] TRANSCRIPT:
+সম্পর্কে স্বাস্থ্য সম্পর্কে আপনার কোন আছে ঠিক আছে
+16:52:37 [INFO] ----------------------------------------------------------------------
+16:52:37 [INFO] File: hospital outbound call center.mp3
+16:52:37 [INFO] Duration: 43.70s | chunks: 2
+16:52:44 [INFO] [CTC] Inference: 6.75s | RTF: 0.154
+16:52:44 [INFO] [CTC] TRANSCRIPT:
+াকি মদ আপনার ষলোনাম বাড়ছিলাম ষোলো পচাশ মিনি ছটার দি আসেন পাঁচ ছাতার মধ্যে আসেন আচ্ছা আচ্ছা ঠিক আছে  আছে
+16:52:52 [INFO] [RNNT] Inference: 7.90s | RTF: 0.181
+16:52:52 [INFO] [RNNT] TRANSCRIPT:
+আপনার ষোলো নাম বাড়ছিলাম হ্যাঁ ষোলো পঞ্চাশ মিনিট হবে ছটার দিকে আসেন পাঁচটার থেকে ছার মধ্যে আসেন আচ্ছা আচ্ছা ঠিক আছে ঠিক আছে
+16:52:52 [INFO] ----------------------------------------------------------------------
+16:52:52 [INFO] File: movie voice.wav
+16:52:52 [INFO] Duration: 13.48s | chunks: 1
+16:52:55 [INFO] [CTC] Inference: 2.32s | RTF: 0.172
+16:52:55 [INFO] [CTC] TRANSCRIPT:
+আমরা কেউ মাস্টার হতে চেয়েছিলাম কেউ ডাক্তার কেউ উকিল অমলকান্তি সেসব কিছু হতে চায়নি সে রদ্দুর হতে চেয়েছিল ক্ষান্ত বর্ষণ কা দেখা বিকেলের সে রাজু রদ্দুর জামার জামরুলের পাতায় য নাকি অল্প একটু হাসির মতন লেগে থাককে
+16:52:58 [INFO] [RNNT] Inference: 3.46s | RTF: 0.257
+16:52:58 [INFO] [RNNT] TRANSCRIPT:
+আমরা কেউ মাস্টার হতে চেয়েছিলাম কেউ ডাক্তার কেউ উকিল অমরকান্তি সেসব কিছু হতে চায়নি সে রোদ্দুর হতে চেয়েছিল ক্ষ্তবর্ষণ কাট দেখা বিকেলের সে রাজু গ্রদ্তুর জামার জামরুলের পাতায় যা নাকি অল্প একটু হাসির মতন লেগে থাকেন
+16:52:58 [INFO] ----------------------------------------------------------------------
+16:52:58 [INFO] File: news voice.wav
+16:52:58 [INFO] Duration: 10.72s | chunks: 1
+16:53:00 [INFO] [CTC] Inference: 2.00s | RTF: 0.187
+16:53:00 [INFO] [CTC] TRANSCRIPT:
+শুরু থেকে ঝড়ো ব্যাটিং উপহার দেন ভারতের ক্রিকেটারেরা ওপেনার অভিষেক শর্মা এবং ঈশান কিষান দুজনেই আলাদা ধাঁচে দুটি অর্ধশতক করেন আর তাদের রান করার গতি ছিল অত্যন্ত ফাস্ট
+16:53:03 [INFO] [RNNT] Inference: 3.01s | RTF: 0.281
+16:53:03 [INFO] [RNNT] TRANSCRIPT:
+শুরু থেকেই ঝড়ো ব্যাটিং উপহার দেন ভারতের ক্রিকেটারেরা ওপেনার অভিষেক শর্মা এবং ঈশান কিষান দুজনেই আলাদা ধাঁচের দুটি অর্ধশতক করেন আর তাদের রান করার গতি ছিল অত্যন্ত ফাস্ট
+16:53:03 [INFO] ======================================================================
+16:53:03 [INFO] SUMMARY: 5 ok, 0 failed | model load 4.7s
+16:53:03 [INFO] [CTC] total audio 127.0s | inference 19.4s | overall RTF 0.153
+16:53:03 [INFO] [RNNT] total audio 127.0s | inference 24.9s | overall RTF 0.196
+16:53:03 [INFO] Results: D:\python projects\ASR-models\indic_conformer_600m_bn\outputs\results_int8_20261112_165209.txt
+16:53:03 [INFO] JSON   : D:\python projects\ASR-models\indic_conformer_600m_bn\outputs\results_int8_20261112_165209.json

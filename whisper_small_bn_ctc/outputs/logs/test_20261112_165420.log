@@ -1,0 +1,42 @@
+16:54:20 [INFO] Log file: D:\python projects\ASR-models\whisper_small_bn_ctc\outputs\logs\test_20261112_165420.log
+16:54:20 [INFO] ======================================================================
+16:54:20 [INFO] Model: whisper_small_bn_ctc (greedy CTC) | CPU threads: 12 | chunk: 30.0s
+16:54:22 [INFO] torch 2.15.0+cpu | python 3.12.16
+16:54:22 [INFO] Found 5 audio file(s)
+16:54:22 [INFO] Loading model from D:\python projects\ASR-models\whisper_small_bn_ctc\model ...
+16:54:34 [INFO] Model loaded in 11.2s | params=102.4M
+16:54:34 [INFO] ----------------------------------------------------------------------
+16:54:34 [INFO] File: ai voice.mp3
+16:54:35 [INFO] Duration: 8.07s | chunks: 1
+16:54:38 [INFO] Inference: 2.43s | RTF: 0.301
+16:54:38 [INFO] TRANSCRIPT:
+আইহেল্প বিডি থেকে আপনার অর্ডারটি সফলভাবে গ্রহণ করা হয়েছেআমাদের সাথে কেনাকাটা করার জন্য আপনাকে ধন্যাবাদ
+16:54:38 [INFO] ----------------------------------------------------------------------
+16:54:38 [INFO] File: hospital inbound call center.mp3
+16:54:38 [INFO] Duration: 50.98s | chunks: 2
+16:54:43 [INFO] Inference: 4.66s | RTF: 0.091
+16:54:43 [INFO] TRANSCRIPT:
+দিক হসপত থেকে পনএকজন পশন ে ন্ বারে হসপাালা প্রপেশন ভর্তি থাকা সুবাধে াসপাল সেবা সম্পর্কি আপনার কোন পরাশ থভ োন অভিোগ আে অভিগিনে সলল
+16:54:43 [INFO] ----------------------------------------------------------------------
+16:54:43 [INFO] File: hospital outbound call center.mp3
+16:54:43 [INFO] Duration: 43.70s | chunks: 2
+16:54:47 [INFO] Inference: 4.58s | RTF: 0.105
+16:54:47 [INFO] TRANSCRIPT:
+নিবাল হস মন পে বলছেু নিরসে ন রিয নবশ্য নামবেনমমবেমকত সিিলসমদর স্গা খুন বল আ মহম্দা বেগম আনার ল ন বার ছ ািে আস চ ে
+16:54:47 [INFO] ----------------------------------------------------------------------
+16:54:47 [INFO] File: movie voice.wav
+16:54:47 [INFO] Duration: 13.48s | chunks: 1
+16:54:49 [INFO] Inference: 2.22s | RTF: 0.165
+16:54:49 [INFO] TRANSCRIPT:
+আমরাকেউ মাস্টার হতে চয়েছিাম কেউ টা্তার কেউউকির অমলরকান্তি শেষ কিছু হতে চাযইনি সে অদ্যুর হতে চয়েছিলখান্তবর্ষন কার দেখা বিকেলে সে রাজুঘদ্ধুর ামা যামরুলের পাতায় তা নাকি অল্পকটু হাসিরমতর লেগে থাকে
+16:54:49 [INFO] ----------------------------------------------------------------------
+16:54:49 [INFO] File: news voice.wav
+16:54:49 [INFO] Duration: 10.72s | chunks: 1
+16:54:52 [INFO] Inference: 2.27s | RTF: 0.212
+16:54:52 [INFO] TRANSCRIPT:
+শুরু থেকেই ঝডলোব্যাটিং পহার দেন ভারতের ক্রিকেটারের অপেনার অহিষেক শর্মা এবং ইশানকিশান দুজনেই আলাদা ধাসির দুটি অর্ধশতক করেন আর তাদের রান করার গতি ছিল ত্যন্ত ফাস্ট
+16:54:52 [INFO] ======================================================================
+16:54:52 [INFO] SUMMARY: 5 ok, 0 failed | model load 11.2s
+16:54:52 [INFO] Total audio 127.0s | inference 16.2s | overall RTF 0.127
+16:54:52 [INFO] Results: D:\python projects\ASR-models\whisper_small_bn_ctc\outputs\results_20261112_165420.txt
+16:54:52 [INFO] JSON   : D:\python projects\ASR-models\whisper_small_bn_ctc\outputs\results_20261112_165420.json

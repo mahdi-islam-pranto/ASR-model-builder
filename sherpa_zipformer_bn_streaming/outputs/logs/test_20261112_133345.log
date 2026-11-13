@@ -1,0 +1,10 @@
+13:33:45 [INFO] Log file: D:\python projects\ASR-models\sherpa_zipformer_bn_streaming\outputs\logs\test_20261112_133345.log
+13:33:45 [INFO] ======================================================================
+13:33:45 [INFO] Model: sherpa_zipformer_bn_streaming | decoding: modified_beam_search | CPU threads: 4 | piece: 0.1s | endpoint: True
+13:33:45 [ERROR] sherpa-onnx missing (pip install sherpa-onnx): ModuleNotFoundError: No module named 'sherpa_onnx'
+13:33:45 [DEBUG] Traceback:
+Traceback (most recent call last):
+  File "D:\python projects\ASR-models\sherpa_zipformer_bn_streaming\test_model.py", line 189, in main
+    import sherpa_onnx
+ModuleNotFoundError: No module named 'sherpa_onnx'
+

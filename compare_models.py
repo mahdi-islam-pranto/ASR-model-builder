@@ -15,6 +15,7 @@ result JSONs saved in notebooks/outputs/, and writes comparison/comparison_<time
 Usage:
     python compare_models.py
     python compare_models.py --no-colab        # local runs only
+    python compare_models.py --all-files       # include audio no longer in sample-audio/
 """
 
 import argparse
@@ -139,9 +140,15 @@ def main() -> int:
     sys.stdout.reconfigure(encoding="utf-8")
     parser = argparse.ArgumentParser(description="Compare ASR model results")
     parser.add_argument("--no-colab", action="store_true", help="ignore notebooks/outputs/*.json")
+    parser.add_argument("--all-files", action="store_true",
+                        help="also report audio files no longer present in sample-audio/")
     args = parser.parse_args()
 
     rows = collect(not args.no_colab)
+    if not args.all_files:  # only audio that is currently in sample-audio/
+        for r in rows:
+            r["files"] = {k: v for k, v in r["files"].items() if (AUDIO_DIR / k).exists()}
+        rows = [r for r in rows if r["files"]]
     if not rows:
         print("No results found. Run test_model.py in the model folders first.")
         return 1
@@ -179,7 +186,8 @@ def main() -> int:
 
     # ---- per file ----
     for a in audio_files:
-        out.append(f"## {a}\n")
+        dur = next((r["files"][a]["duration"] for r in rows if a in r["files"]), None)
+        out.append(f"## {a}" + (f" ({dur:.1f} s)" if dur else "") + "\n")
         if a in refs:
             out.append(f"**Reference:** {refs[a]}\n")
         out.append("| Model | Run | Source | RTF | Words | Repeat % | WER | CER |")
