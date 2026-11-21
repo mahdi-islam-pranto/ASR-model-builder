@@ -10,11 +10,27 @@ This is a **trial run**, not the final model. The final model needs our own labe
 1. Does the training pipeline work end to end (data → training → evaluation → model on the PC)?
 2. How much does phone + conversational training help, and does it hurt clean audio?
 
+**Two ways to run it.** Both do the same thing with the same code:
+- **Python scripts (recommended):** run on any machine with a GPU. Every step saves its result to disk,
+  and a stopped run continues where it left off.
+- **Colab notebook:** the same steps, with the explanations next to the code. Free Colab sessions can
+  disconnect.
+
 | File | What it is |
 |---|---|
-| [moonshine_finetune_colab.ipynb](moonshine_finetune_colab.ipynb) | Colab notebook: data, baseline, training, evaluation, saving. Every step is explained in the notebook |
-| [test_finetuned.py](test_finetuned.py) | Run on your PC: original vs fine-tuned model on `sample-audio/`, side-by-side report |
-| `models/` | Put downloaded fine-tuned models here (git-ignored, ~245 MB each) |
+| [config.py](config.py) | **All settings** (data, filters, hyper-parameters, paths). Per-machine changes go in `config_local.py` |
+| [prepare_data.py](prepare_data.py) | Step 1: download, inspect and prepare the train/dev/test data → `data/processed/` |
+| [baseline.py](baseline.py) | Step 2: score the **original** model on all test sets |
+| [train.py](train.py) | Step 3: fine-tune. Resumes automatically from the last checkpoint → `runs/<run>/final_model` |
+| [evaluate_model.py](evaluate_model.py) | Step 4: score the fine-tuned model, compare with the baseline, transcribe your own recordings → `runs/<run>/results.md` |
+| [run_all.py](run_all.py) | Runs steps 1–4 in order, skipping steps that are already done |
+| [common.py](common.py) | Shared code: text cleaning, audio decoding, phone simulation, batch collator, evaluation |
+| [requirements-train.txt](requirements-train.txt) | Python packages for the training machine |
+| [test_finetuned.py](test_finetuned.py) | Run on your PC (CPU): original vs fine-tuned model on `sample-audio/`, side-by-side report |
+| [moonshine_finetune_colab.ipynb](moonshine_finetune_colab.ipynb) | The same pipeline as a Colab notebook, with explanations next to every step |
+| `data/` | Downloads + prepared datasets (git-ignored, ~6 GB downloads + ~9 GB processed for the default 60 h; keep ~20 GB free) |
+| `runs/<run name>/` | Checkpoints, logs, curves, scores, final model (git-ignored) |
+| `models/` | Fine-tuned models copied from another machine (git-ignored) |
 | `outputs/` | Reports written by `test_finetuned.py` |
 
 ---
@@ -119,43 +135,86 @@ Key facts about **this** model, already checked against the real model:
 
 ## 3. Step by step
 
-### 3.1 One-time preparation (10 min)
+### 3.1 One-time preparation
 
 1. **Hugging Face:** log in, open https://huggingface.co/datasets/ai4bharat/IndicVoices and **accept the
    conditions**. Create a **read** token at https://huggingface.co/settings/tokens.
-2. **Google Drive:** make the folder `MyDrive/moonshine_finetune/sample-audio/` and upload the 5 files from
-   this repo's `sample-audio/`. Optional but recommended: also upload reference transcripts (step 3.5).
-3. **Colab:** File → Upload notebook → `moonshine_finetune_colab.ipynb`.
-   Runtime → Change runtime type → **T4 GPU**. 🔑 Secrets (left sidebar) → add `HF_TOKEN` = your token,
-   and switch on "Notebook access".
+2. **GPU machine:** copy the whole project (or at least `Fine-tune-moonshine/`, plus `sample-audio/` next to
+   it, which is used for the own-recordings report). Then:
+   ```bash
+   cd ASR-models
+   python -m venv .venv-train && source .venv-train/bin/activate      # Windows: .venv-train\Scripts\activate
+   pip install torch --index-url https://download.pytorch.org/whl/cu126   # pick the CUDA build for your driver
+   pip install -r Fine-tune-moonshine/requirements-train.txt
+   python -c "import torch; print(torch.cuda.is_available(), torch.cuda.get_device_name(0))"   # must print True + your GPU
+   ```
+3. **Token:** put `HF_TOKEN=<your token>` in the project's `.env` file (the scripts read it), or run
+   `huggingface-cli login` once.
+4. **Settings for this machine (optional):** create `Fine-tune-moonshine/config_local.py`. It is
+   git-ignored and overrides `config.py`:
+   ```python
+   BATCH_SIZE = 32        # GPU with 24 GB+; keep 16 for 12-16 GB, 8 for 8 GB (then GRAD_ACCUM = 4)
+   GRAD_ACCUM = 1         # keep BATCH_SIZE * GRAD_ACCUM = 32
+   NUM_WORKERS = 4        # CPU processes preparing batches (phone simulation); up to your CPU cores
+   # DATA_DIR = Path("/data/moonshine")    # if the default disk is small (~20 GB needed)
+   ```
 
-### 3.2 Quick test run (~10–15 min)
+All commands below are run **inside `Fine-tune-moonshine/`**.
 
-In the CONFIG cell set `QUICK_TEST = True` → *Runtime → Run all*. It uses 1 shard, ~0.5 h of data and 60
-training steps. It is not meant to improve anything; it shows that login, downloads, disk, GPU, training,
-evaluation and saving all work. **Look at Part 4's output** while it runs:
+### 3.2 Quick test run (~10–20 min)
+
+```bash
+python prepare_data.py --inspect      # downloads 1 shard, prints the columns, examples and sample rates, then stops
+python run_all.py --quick             # whole pipeline with tiny data: 1 shard, ~0.5 h, 60 training steps
+```
+It is not meant to improve anything. It shows that login, downloads, disk, GPU, training, evaluation and
+saving all work (output in `runs/quick_test/`). **Read the `--inspect` output:**
 - Which text column was picked, and do the example transcripts look right (as spoken, no strange tags)?
-  If another column looks better, set `IV_TEXT_COL`.
+  If another column looks better, set `IV_TEXT_COL` in `config_local.py`.
 - The **native sample rates**: how many clips are `8000` (real phone recordings)?
 - The short-list columns: is there one that marks conversations? You can use it later with `IV_KEEP`.
+- **Listen** to `data/processed/examples/*.wav` (original vs phone-simulated) and look at
+  `phone_sim_spectrogram.png` (written by the quick run).
 
-### 3.3 The real run (~1.5–2.5 h in total)
+### 3.3 The real run
 
-Set `QUICK_TEST = False` → *Runtime → Restart session and run all*. Default: up to 60 h of IndicVoices
-(10 shards) + ~15 h SUBAK.KO, 3 epochs.
+```bash
+python run_all.py --zip
+```
+Or run the steps one by one: `prepare_data.py` → `baseline.py` → `train.py` → `evaluate_model.py --zip`.
+Default: up to 60 h of IndicVoices (10 shards) + ~15 h SUBAK.KO, 3 epochs.
 
-| Phase | Time on a T4 (estimate) |
-|---|---|
-| Download + prepare data | 20–40 min (CPU decoding, Colab has only 2 CPU cores) |
-| Baseline evaluation | 5–10 min |
-| Training | 45–90 min |
-| Final evaluation + saving | 10–15 min |
+| Phase | T4 (estimate) | Faster GPU (RTX 3090/4090, A100) |
+|---|---|---|
+| Download + prepare data (CPU work) | 20–40 min | depends on CPU cores/disk, similar |
+| Baseline evaluation | 5–10 min | 2–5 min |
+| Training | 45–90 min | 15–40 min |
+| Final evaluation | 10–15 min | 5 min |
 
-These times are estimates; the notebook prints the real numbers. Keep the browser tab open: free Colab
-disconnects idle sessions. **If it disconnects:** run all cells again. Data preparation repeats, but training
-**resumes from the last checkpoint on Drive**.
+These times are estimates; the log prints the real numbers.
 
-### 3.4 Reading the results (notebook Part 8)
+**Stopped (crash, reboot, Ctrl+C, closed SSH)?** Run the same command again. Prepared data and baseline
+are skipped, and training **continues from the last checkpoint** (saved every 250 updates).
+On a remote Linux machine, keep it running after you log out:
+```bash
+nohup python run_all.py --zip > run_all.out 2>&1 &
+tail -f run_all.out            # watch; Ctrl+C stops watching, not training
+```
+(or use `tmux`). Everything printed is also saved in `runs/<run>/logs/`.
+
+**While it trains:** `runs/<run>/curves.png` and `log_history.csv` are updated after every evaluation. Training
+loss should go down. Dev WER should go down too; if it goes **up** twice in a row, the model is overfitting.
+The best checkpoint is kept anyway.
+
+**New experiment:** set a new `RUN_NAME` (or `--run-name run2_...`). Prepared data and the baseline are reused
+if the data settings didn't change. If they changed, `prepare_data.py` rebuilds automatically.
+
+**Colab instead:** upload `moonshine_finetune_colab.ipynb`, set Runtime → T4 GPU, add the `HF_TOKEN` secret
+(🔑 in the sidebar), upload `sample-audio/` to `MyDrive/moonshine_finetune/sample-audio/`, run once with
+`QUICK_TEST = True`, then with `False`. Checkpoints go to Drive. After a disconnect, run all again: data
+preparation repeats, training resumes.
+
+### 3.4 Reading the results (`runs/<run>/results.md`, or notebook Part 8)
 
 | Test set | What it tells you | Good result |
 |---|---|---|
@@ -171,15 +230,17 @@ experiment tries to close.
 
 ### 3.5 Make your own call test measurable (recommended, 15 min)
 
-Write the correct transcript of each call recording into `<audio name>.txt` next to the audio (both in
-`sample-audio/` and on Drive), following the rules in the main plan (numbers as words, English words in
-Bangla script, no punctuation). Then the notebook and `test_finetuned.py` print **WER/CER for your real
-calls**, not just transcripts to eyeball. Two calls (~95 s) are a small test, but much better than none.
+Write the correct transcript of each call recording into `<audio name>.txt` next to the audio in
+`sample-audio/` (and on Drive if you use Colab), following the rules in the main plan (numbers as words,
+English words in Bangla script, no punctuation). Then `evaluate_model.py`, the notebook and
+`test_finetuned.py` print **WER/CER for your real calls**, not just transcripts to eyeball. Two calls (~95 s)
+are a small test, but much better than none.
 
 ### 3.6 Test on your PC
 
-1. Download `MyDrive/moonshine_finetune/<run name>/final_model.zip` and unzip it into
-   `Fine-tune-moonshine/models/<run name>/`.
+1. If you trained on another machine or on Colab: copy `runs/<run name>/final_model.zip` (made by `--zip`) to
+   your PC and unzip it into `Fine-tune-moonshine/models/<run name>/`. If you trained on this PC, the model is
+   already in `Fine-tune-moonshine/runs/<run name>/final_model`.
 2. From the project root:
    ```
    .venv\Scripts\python Fine-tune-moonshine\test_finetuned.py --model Fine-tune-moonshine\models\run1_indicvoices_phone
@@ -219,12 +280,15 @@ calls**, not just transcripts to eyeball. Two calls (~95 s) are a small test, bu
 
 | Problem | Fix |
 |---|---|
-| `No access to ai4bharat/IndicVoices` | Accept the conditions on the dataset page with the **same** account as the token; check the `HF_TOKEN` secret has notebook access |
-| `CUDA out of memory` | `BATCH_SIZE = 8`, `GRAD_ACCUM = 4` |
-| Loss is `nan` | `LEARNING_RATE = 1e-5` |
-| Disk full | Fewer `IV_TRAIN_FILES`; delete `/content/work/raw` after Part 4 (the processed data is in `/content/work/cache`) |
+| `No access to ai4bharat/IndicVoices` | Accept the conditions on the dataset page with the **same** account as the token; check `HF_TOKEN` in `.env` (scripts) or the Colab secret has notebook access |
+| `torch.cuda.is_available()` is `False` | You installed the CPU build of PyTorch: reinstall with the CUDA index URL (step 3.1) |
+| `CUDA out of memory` | `BATCH_SIZE = 8`, `GRAD_ACCUM = 4` in `config_local.py` |
+| Loss is `nan` | `LEARNING_RATE = 1e-5`; or `PRECISION = "fp32"` |
+| Disk full | Fewer `IV_TRAIN_FILES`. After data preparation you can delete `data/raw/` (except to rebuild). `DATA_DIR` can point to another disk |
 | RAM crash during data preparation | Lower `IV_MAX_TRAIN_HOURS`; `TEST_CLIPS_PER_SPLIT = 200` |
-| Session cut off during training | Run all cells again; training resumes from the last checkpoint on Drive |
+| Training stopped | Run the same command again; it resumes from the last checkpoint |
+| Dataloader errors on Windows | `NUM_WORKERS = 0` in `config_local.py` (slower, but no worker processes) |
+| Want to restart training from zero | `python train.py --fresh` |
 | "You have reached your GPU usage limit" | Free Colab quota is used up; wait (usually hours to a day) or use Kaggle (30 GPU-h/week; the notebook runs there with paths changed) |
 | Text column looks wrong (tags, Latin script) | Set `IV_TEXT_COL` to another column from the Part 4 printout |
 
@@ -239,9 +303,15 @@ calls**, not just transcripts to eyeball. Two calls (~95 s) are a small test, bu
 | SUBAK.KO | CC-BY-4.0 | Attribution (SUST CSE) |
 | BanSpeech | CC-BY-4.0 / CC-BY-NC-4.0 (the card is contradictory) | Used **only for testing**, not in the model |
 
-## 7. How the notebook was checked
+## 7. How the code was checked
 
-The notebook was run end to end on CPU with tiny settings (public BanSpeech files standing in for the gated
+The **scripts** were run on Windows (CPU, 2 dataloader workers) with tiny settings, using public BanSpeech
+files in place of the gated IndicVoices: `run_all.py --quick` passed all 4 steps. A second run skipped data
+preparation and baseline and resumed training from the checkpoint. `prepare_data.py --inspect` and
+`test_finetuned.py` on the result also worked. Not tested: a real GPU (fp16/bf16) and IndicVoices itself.
+The `--inspect` output shows what is actually in IndicVoices.
+
+The **notebook** was run end to end on CPU with tiny settings (public BanSpeech files standing in for the gated
 IndicVoices, 6 training steps): data preparation, baseline, training with checkpoints and dev WER, loading
 the best checkpoint, before/after table, own-recordings report, saving + zip. `test_finetuned.py` was run
 on the result. Its baseline transcripts of `sample-audio/` match the earlier comparison report word for word,

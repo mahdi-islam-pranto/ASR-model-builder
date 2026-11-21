@@ -3,3 +3,6 @@ __pycache__/
 */model/
 .env
 Fine-tune-moonshine/models/
+Fine-tune-moonshine/data/
+Fine-tune-moonshine/runs/
+Fine-tune-moonshine/config_local.py

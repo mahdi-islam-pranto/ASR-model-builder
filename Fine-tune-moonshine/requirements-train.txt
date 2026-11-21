@@ -1,0 +1,17 @@
+# Fine-tuning environment (GPU machine).
+# 1) Install PyTorch with CUDA FIRST, matching your driver - see https://pytorch.org/get-started/locally/
+#    e.g.  pip install torch --index-url https://download.pytorch.org/whl/cu126
+# 2) then: pip install -r requirements-train.txt
+transformers==5.22.2      # version the scripts were tested with (the model needs transformers 5.x)
+accelerate>=1.10
+datasets>=4.0
+huggingface_hub
+pyarrow
+numpy
+scipy
+pandas
+soundfile
+librosa>=0.10
+jiwer
+matplotlib
+tabulate                  # nicer tables in results.md
