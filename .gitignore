@@ -6,3 +6,5 @@ Fine-tune-moonshine/models/
 Fine-tune-moonshine/data/
 Fine-tune-moonshine/runs/
 Fine-tune-moonshine/config_local.py
+Fine-tune-moonshine/own_test_set/*
+!Fine-tune-moonshine/own_test_set/README.txt

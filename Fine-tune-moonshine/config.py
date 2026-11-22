@@ -9,6 +9,7 @@ so this file stays the same on every machine. Example config_local.py:
     DATA_DIR = Path("/mnt/bigdisk/moonshine_data")
 
 `config_local.py` is executed at the end of this file, so it can override any name below.
+The Kaggle / Colab notebooks write their own config_local.py (paths on Google Drive / Kaggle disks).
 The `--quick` flag of every script calls apply_quick() (tiny end-to-end test run).
 """
 
@@ -19,32 +20,57 @@ HERE = Path(__file__).resolve().parent
 PROJECT_ROOT = HERE.parent
 
 # ---------------------------------------------------------------- run + paths
-RUN_NAME = "run1_indicvoices_phone"      # change for every new experiment, so results stay separate
-DATA_DIR = HERE / "data"                 # downloads (raw/) + processed datasets (processed/), ~10 GB for 60 h
+RUN_NAME = "stage1_subakko_phone"        # change for every new experiment, so results stay separate
+DATA_DIR = HERE / "data"                 # processed datasets (processed/), ~7 GB for 60 h
+RAW_DIR = None                           # downloaded parquet files. None = DATA_DIR/raw (~11 GB for 60 h)
+DELETE_RAW_AFTER_PREP = False            # True = delete downloads after prepare_data (saves disk on Kaggle/Colab)
 RUNS_DIR = HERE / "runs"                 # one folder per RUN_NAME: checkpoints, logs, final model, results
-MY_AUDIO_DIR = PROJECT_ROOT / "sample-audio"   # your own recordings (+ optional <name>.txt references)
+MY_AUDIO_DIR = PROJECT_ROOT / "sample-audio"   # your recordings: transcribed before/after (a .txt next to it = scored)
+OWN_TEST_DIR = HERE / "own_test_set"     # YOUR labelled call clips: x.wav + x.txt pairs. Scored in baseline + evaluate
 
-BASE_MODEL = "Sanjidh090/moonshine-base-bn"    # or a local folder, e.g. PROJECT_ROOT / "moonshine_base_bn" / "model"
+BASE_MODEL = "Sanjidh090/moonshine-base-bn"    # or a local folder / a previous final_model (stage 2 starts from stage 1)
 
-# ---------------------------------------------------------------- training data 1: IndicVoices Bengali
-# Real extempore + conversational speech; two-person conversations were recorded over an 8 kHz phone line.
-# CC-BY-4.0, gated: accept the conditions on https://huggingface.co/datasets/ai4bharat/IndicVoices first.
-IV_REPO = "ai4bharat/IndicVoices"
-IV_TRAIN_FILES = [f"bengali/train-{i:05d}-of-00096.parquet" for i in range(10)]   # 10 of 96 shards, ~410 MB each
-IV_VALID_FILES = ["bengali/valid-00000-of-00001.parquet"]
-IV_MAX_TRAIN_HOURS = 60       # stop collecting after this many hours
-IV_TEXT_COL = None            # None = auto-detect. Run `prepare_data.py --inspect` and set it if needed
-IV_KEEP = None                # e.g. {"task_name": ["conversation"]}: keep only some recording types
+# ---------------------------------------------------------------- training data
+# A list of sources. Each one: Hugging Face dataset repo, which parquet files, column names, how many hours.
+#   phone_sim=True : the clip becomes phone audio with probability PHONE_SIM_PROB (new random version every epoch),
+#                    otherwise only the volume changes. Real 8 kHz audio is never phone-simulated again.
+#   keep           : optional filter, e.g. {"dialect": ["Sylhet", "Chittagong"]}
+# Hours are spread evenly over the files, so more files = more different speakers/books.
+SUBAKKO_REPO = "SUST-CSE-Speech/SUBAK.KO"     # Bangladeshi standard Bangla, human-checked, CC-BY-4.0
 
-# ---------------------------------------------------------------- training data 2: clean rehearsal mix
-# Bangladeshi read speech, mixed in so the model does not forget clean audio. CC-BY-4.0.
-SUBAKKO_REPO = "SUST-CSE-Speech/SUBAK.KO"
-SUBAKKO_FILES = [f"data/train-{i:05d}-of-00047.parquet" for i in range(4)]       # ~4 h per shard
-CLEAN_MIX_RATIO = 0.20        # clean hours = 20% of the training set. 0 = off
 
-# ---------------------------------------------------------------- test data (never trained on)
+def subakko_train_files(n):
+    """n of the 47 SUBAK.KO train files (~470 MB, ~4.3 h each), spread over the whole set."""
+    return [f"data/train-{round(i * 47 / n):05d}-of-00047.parquet" for i in range(n)]
+
+
+# Stage 1: standard Bangladeshi Bangla. ~30% of the clips are dropped (digits / English letters), so one file
+# gives ~3 h: 20 files ~ 60 h (~9.5 GB download). In config_local.py you can change it,
+# e.g. TRAIN_SOURCES[0].update(files=subakko_train_files(10), hours=30) for a shorter run.
+TRAIN_SOURCES = [
+    dict(name="subakko", repo=SUBAKKO_REPO, files=subakko_train_files(20),
+         text_col="transcription", hours=60, phone_sim=True),
+]
+
+# Stage 2 (later, NOT now): regional dialects. Machine-made labels (Whisper) in dialect spelling, CC-BY-NC.
+# Start from the stage 1 model (BASE_MODEL = runs/stage1_subakko_phone/final_model) and keep ~30% SUBAK.KO:
+# TRAIN_SOURCES = [
+#     dict(name="dialect", repo="niloycste68/Bangali_local_dialect_ASR_HF_Dataset",
+#          files=[f"data/train-{i:05d}-of-00027.parquet" for i in range(0, 27, 2)],
+#          text_col="sentence", hours=40, phone_sim=True, keep=None, category_col="dialect"),
+#     dict(name="subakko", repo=SUBAKKO_REPO,
+#          files=[f"data/train-{i:05d}-of-00047.parquet" for i in range(20, 47, 6)],   # other files than stage 1
+#          text_col="transcription", hours=17, phone_sim=True),
+# ]
+
+# ---------------------------------------------------------------- dev + test data (never trained on)
+# dev  = SUBAK.KO validation clips, half clean + half phone-simulated. Picks the best checkpoint.
+# tests: SUBAK.KO test (clean + the same clips phone-simulated) and BanSpeech domains (Bangladeshi broadcast)
+SUBAKKO_VALID_FILES = ["data/validation-00000-of-00005.parquet"]
+SUBAKKO_TEST_FILES = ["data/test-00000-of-00005.parquet", "data/test-00003-of-00005.parquet"]
 BANSPEECH_REPO = "SUST-CSE-Speech/banspeech"
-BANSPEECH_SPONT = ["political_talkshow", "celebrity_interview", "drama_series"]
+BANSPEECH_SPONT = ["political_talkshow", "celebrity_interview", "drama_series"]   # free conversation
+BANSPEECH_MEDICINE = ["medicine"]                                                 # medical words
 BANSPEECH_CLEAN = ["television_news", "audio_books"]
 TEST_CLIPS_PER_SPLIT = 300
 DEV_CLIPS = 300
@@ -56,7 +82,7 @@ DROP_LATIN = True             # our rule: English words are written in Bangla sc
 DROP_DIGITS = True            # our rule: numbers are written as words
 
 # ---------------------------------------------------------------- augmentation
-PHONE_SIM_PROB = 0.5          # chance a wide-band training clip becomes phone audio (new random version each epoch)
+PHONE_SIM_PROB = 0.6          # 60% phone audio (the target), 40% clean (so clean audio is not forgotten)
 
 # ---------------------------------------------------------------- training
 LEARNING_RATE = 3e-5
@@ -78,13 +104,11 @@ QUICK = False
 
 def apply_quick():
     """Tiny end-to-end run (~10-15 min on a GPU) to check that everything works."""
-    global QUICK, RUN_NAME, IV_TRAIN_FILES, IV_MAX_TRAIN_HOURS, SUBAKKO_FILES
-    global TEST_CLIPS_PER_SPLIT, DEV_CLIPS, MAX_STEPS, EVAL_STEPS
+    global QUICK, RUN_NAME, TRAIN_SOURCES, SUBAKKO_TEST_FILES, TEST_CLIPS_PER_SPLIT, DEV_CLIPS, MAX_STEPS, EVAL_STEPS
     QUICK = True
     RUN_NAME = "quick_test"
-    IV_TRAIN_FILES = IV_TRAIN_FILES[:1]
-    IV_MAX_TRAIN_HOURS = min(IV_MAX_TRAIN_HOURS, 0.5)
-    SUBAKKO_FILES = SUBAKKO_FILES[:1]
+    TRAIN_SOURCES = [dict(s, files=s["files"][:1], hours=min(s["hours"], 0.5)) for s in TRAIN_SOURCES]
+    SUBAKKO_TEST_FILES = SUBAKKO_TEST_FILES[:1]
     TEST_CLIPS_PER_SPLIT = min(TEST_CLIPS_PER_SPLIT, 30)
     DEV_CLIPS = min(DEV_CLIPS, 40)
     MAX_STEPS = 60
@@ -93,27 +117,26 @@ def apply_quick():
 
 def processed_dir() -> Path:
     """Prepared datasets. Shared by all runs that use the same data settings."""
-    return DATA_DIR / ("processed_quick" if QUICK else "processed")
+    return Path(DATA_DIR) / ("processed_quick" if QUICK else "processed")
 
 
 def raw_dir() -> Path:
-    return DATA_DIR / "raw"
+    return Path(RAW_DIR) if RAW_DIR else Path(DATA_DIR) / "raw"
 
 
 def run_dir() -> Path:
-    return RUNS_DIR / RUN_NAME
+    return Path(RUNS_DIR) / RUN_NAME
 
 
 def data_settings() -> dict:
     """Everything that changes the prepared data. If it changes, prepare_data.py rebuilds."""
     return {k: (str(v) if isinstance(v, Path) else v) for k, v in dict(
-        IV_REPO=IV_REPO, IV_TRAIN_FILES=IV_TRAIN_FILES, IV_VALID_FILES=IV_VALID_FILES,
-        IV_MAX_TRAIN_HOURS=IV_MAX_TRAIN_HOURS, IV_TEXT_COL=IV_TEXT_COL, IV_KEEP=IV_KEEP,
-        SUBAKKO_REPO=SUBAKKO_REPO, SUBAKKO_FILES=SUBAKKO_FILES, CLEAN_MIX_RATIO=CLEAN_MIX_RATIO,
-        BANSPEECH_REPO=BANSPEECH_REPO, BANSPEECH_SPONT=BANSPEECH_SPONT, BANSPEECH_CLEAN=BANSPEECH_CLEAN,
+        TRAIN_SOURCES=TRAIN_SOURCES, SUBAKKO_REPO=SUBAKKO_REPO, SUBAKKO_VALID_FILES=SUBAKKO_VALID_FILES,
+        SUBAKKO_TEST_FILES=SUBAKKO_TEST_FILES, BANSPEECH_REPO=BANSPEECH_REPO, BANSPEECH_SPONT=BANSPEECH_SPONT,
+        BANSPEECH_MEDICINE=BANSPEECH_MEDICINE, BANSPEECH_CLEAN=BANSPEECH_CLEAN,
         TEST_CLIPS_PER_SPLIT=TEST_CLIPS_PER_SPLIT, DEV_CLIPS=DEV_CLIPS, MIN_SEC=MIN_SEC, MAX_SEC=MAX_SEC,
         MAX_LABEL_TOKENS=MAX_LABEL_TOKENS, DROP_LATIN=DROP_LATIN, DROP_DIGITS=DROP_DIGITS,
-        BASE_MODEL=BASE_MODEL, SEED=SEED,
+        BASE_MODEL=str(BASE_MODEL), SEED=SEED,
     ).items()}
 
 

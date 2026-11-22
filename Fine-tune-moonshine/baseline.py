@@ -34,6 +34,13 @@ def main(args):
     df.to_csv(csv, index=False)
     hyp_file.write_text(json.dumps(hyps, ensure_ascii=False, indent=1), encoding="utf-8")
     print("\n" + df.to_string(index=False))
+    own = K.own_test_files()
+    if own:
+        print(f"\nYour own calls ({len(own)} labelled files in {C.OWN_TEST_DIR}), for information "
+              "(evaluate_model.py scores them again with both models):")
+        K.evaluate_own(model, tokenizer, "baseline", own)
+    else:
+        print(f"\nNo labelled calls in {C.OWN_TEST_DIR} yet (x.wav + x.txt). See README section 3.0.")
 
     name = "test_bs_spont_phone"
     if name in sets:

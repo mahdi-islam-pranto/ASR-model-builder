@@ -298,9 +298,9 @@ class SpeechCollator:
     """
     Builds one training batch:
       1. 16-bit audio -> float
-      2. augment: wide-band IndicVoices clips (augment=1) become phone audio with probability phone_sim_prob,
-         a new random version every epoch; real 8 kHz recordings stay as they are; clean clips (augment=2)
-         only get a small volume change; dev/test clips (augment=0) are left alone
+      2. augment: training clips with augment=1 become phone audio with probability phone_sim_prob (a new
+         random version every epoch), otherwise only their volume changes; real 8 kHz recordings are never
+         phone-simulated again; augment=2 clips only get a volume change; dev/test clips (augment=0) stay as they are
       3. pad audio to the longest clip (multiple of 320 samples) + attention mask (1 = audio, 0 = padding)
       4. pad labels with -100 (ignored by the loss)
     """
@@ -397,3 +397,31 @@ def transcribe_file(model, tokenizer, path, chunk_sec=20, beams=5):
     size = int(chunk_sec * SR)
     chunks = [c for c in (y[i:i + size] for i in range(0, len(y), size)) if len(c) >= 1600] or [y]
     return " ".join(h for h in transcribe(model, tokenizer, chunks, beams=beams, batch_size=4) if h)
+
+
+# =============================================================== your own labelled calls
+AUDIO_EXTS = {".wav", ".mp3", ".flac", ".ogg", ".m4a", ".opus", ".webm"}
+
+
+def own_test_files():
+    """[(audio path, reference text)] from OWN_TEST_DIR: every audio file that has a .txt with the same name."""
+    d = Path(C.OWN_TEST_DIR)
+    if not d.is_dir():
+        return []
+    pairs = []
+    for p in sorted(d.rglob("*")):
+        if p.suffix.lower() in AUDIO_EXTS and p.with_suffix(".txt").exists():
+            ref = normalize_text(p.with_suffix(".txt").read_text(encoding="utf-8"))
+            if ref:
+                pairs.append((p, ref))
+    return pairs
+
+
+def evaluate_own(model, tokenizer, label, pairs):
+    """Score a model on your own call clips. Long files are transcribed in 20 s chunks."""
+    t0 = time.time()
+    hyps = [transcribe_file(model, tokenizer, p) for p, _ in pairs]
+    w, c = score([r for _, r in pairs], hyps)
+    print(f"  {label:10s} {'own_test_set':22s} WER {w:.3f}  CER {c:.3f}  ({len(pairs)} files, {time.time() - t0:.0f}s)")
+    return {"model": label, "test_set": "own_test_set", "clips": len(pairs), "WER": round(w, 4), "CER": round(c, 4),
+            "sec": round(time.time() - t0, 1)}, hyps

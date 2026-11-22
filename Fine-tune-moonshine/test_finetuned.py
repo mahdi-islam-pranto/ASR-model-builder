@@ -10,7 +10,7 @@ Decoding is identical to moonshine_base_bn/test_model.py (same MoonshineBN class
 same 20 s chunks), so the numbers are comparable with the earlier comparison report.
 
 Usage (from the project root):
-    python Fine-tune-moonshine/test_finetuned.py --model Fine-tune-moonshine/models/run1_indicvoices_phone
+    python Fine-tune-moonshine/test_finetuned.py --model Fine-tune-moonshine/models/stage1_subakko_phone
     python Fine-tune-moonshine/test_finetuned.py --model <dir> --audio "sample-audio/hospital inbound call center.mp3"
     python Fine-tune-moonshine/test_finetuned.py --model <dir> --beams 1        # faster, greedy
 """

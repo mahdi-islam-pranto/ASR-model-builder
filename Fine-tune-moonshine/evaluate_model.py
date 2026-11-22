@@ -10,19 +10,19 @@ Output in runs/<run>/:
   final_scores.csv     baseline + fine-tuned rows
   results.md           before/after table, examples, your own recordings side by side
 
-How to read the table (README section 3.4): the main score is test_bs_spont_phone (Bangladeshi spontaneous
-speech through a simulated phone line). test_bs_clean must not get worse by more than ~1-2 WER points.
+How to read the table (README section 3.4): the most important row is own_test_set (YOUR labelled calls in
+own_test_set/). Without it, look at the *_phone rows. The clean rows (test_subakko_clean, test_bs_clean) must
+not get worse by more than ~1-2 WER points.
 """
 
 import json
 import shutil
+from pathlib import Path
 
 import pandas as pd
 
 import common as K
 import config as C
-
-AUDIO_EXTS = {".wav", ".mp3", ".flac", ".ogg", ".m4a", ".opus", ".webm"}
 
 
 def main(args):
@@ -42,7 +42,21 @@ def main(args):
     base_df = pd.read_csv(base_csv)
     base_hyps = json.loads((C.processed_dir() / "baseline_hyps.json").read_text(encoding="utf-8"))
 
-    both = pd.concat([base_df, ft_df])
+    # your own labelled calls: scored with BOTH models here (you may add files after the baseline was made)
+    own = K.own_test_files()
+    my_dir = Path(C.MY_AUDIO_DIR)
+    files = sorted(p for p in my_dir.iterdir() if p.suffix.lower() in K.AUDIO_EXTS) if my_dir.is_dir() else []
+    base_model = K.load_model() if (own or files) else None
+    if own:
+        print(f"\nown_test_set: {len(own)} labelled files in {C.OWN_TEST_DIR}")
+        b_row, own_base = K.evaluate_own(base_model, tokenizer, "baseline", own)
+        f_row, own_ft = K.evaluate_own(model, tokenizer, "finetuned", own)
+        base_df = pd.concat([base_df, pd.DataFrame([b_row])])
+        ft_df = pd.concat([ft_df, pd.DataFrame([f_row])])
+    else:
+        print(f"(no labelled files in {C.OWN_TEST_DIR}: the most important test is missing, see README 3.0)")
+
+    both =pd.concat([base_df, ft_df])
     both.to_csv(run / "final_scores.csv", index=False)
     cmp = both.pivot(index="test_set", columns="model", values=["WER", "CER"])
     table = pd.DataFrame({
@@ -64,6 +78,14 @@ def main(args):
         info["scores"] = both.to_dict("records")
         info_file.write_text(json.dumps(info, ensure_ascii=False, indent=2, default=str), encoding="utf-8")
 
+    if own:
+        md += ["## Your own calls (own_test_set)", ""]
+        for (p, ref), b, f in zip(own, own_base, own_ft):
+            (wb, _), (wf, _) = K.score([ref], [b]), K.score([ref], [f])
+            md += [f"- **{p.name}** (WER {wb:.2f} → {wf:.2f})", f"  - ref: {ref}", f"  - before: {b}",
+                   f"  - after: {f}"]
+        md.append("")
+
     name = "test_bs_spont_phone"
     if name in sets and name in base_hyps:
         md += [f"## Examples: {name}", ""]
@@ -71,13 +93,10 @@ def main(args):
             md += [f"- **ref:** {ref}", f"  - before: {b}", f"  - after: {f}"]
         md.append("")
 
-    # ---- own recordings, old vs new model
-    files = sorted(p for p in C.MY_AUDIO_DIR.iterdir() if p.suffix.lower() in AUDIO_EXTS) \
-        if C.MY_AUDIO_DIR.is_dir() else []
+    # ---- recordings in sample-audio, old vs new model (scored only if a .txt is next to the audio)
     if files:
         print(f"\nOwn recordings in {C.MY_AUDIO_DIR}:")
-        base_model = K.load_model()
-        md += ["## Own recordings", ""]
+        md += ["## Own recordings (sample-audio)", ""]
         for p in files:
             b = K.transcribe_file(base_model, tokenizer, p)
             f = K.transcribe_file(model, tokenizer, p)
@@ -91,7 +110,7 @@ def main(args):
                 print(f"  WER {wb:.3f} -> {wf:.3f} | CER {cb:.3f} -> {cf:.3f}")
             md.append("")
     else:
-        print(f"(no audio in {C.MY_AUDIO_DIR}; skipping own recordings)")
+        print(f"(no audio in {C.MY_AUDIO_DIR}; skipping sample-audio recordings)")
 
     (run / "results.md").write_text("\n".join(md), encoding="utf-8")
     print(f"\nreport: {run / 'results.md'}")

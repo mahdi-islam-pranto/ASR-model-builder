@@ -1,16 +1,16 @@
 """
 STEP 1: download, inspect and prepare all data.
 
-  python prepare_data.py --inspect     # download a shard, print columns/examples/sample rates, save example wavs, stop
+  python prepare_data.py --inspect     # download one training file, print columns/examples, save example wavs, stop
   python prepare_data.py               # build everything (skips if already built with the same settings)
   python prepare_data.py --force       # rebuild even if it exists
 
 Output (data/processed/ or data/processed_quick/):
-  train/             training clips: IndicVoices (augment=1) + SUBAK.KO clean mix (augment=2), shuffled
-  dev/               IndicVoices valid clips, phone-simulated (picks the best checkpoint during training)
+  train/             training clips from TRAIN_SOURCES (config.py), shuffled
+  dev/               SUBAK.KO validation clips, half clean + half phone-simulated (picks the best checkpoint)
   tests/<name>/      test sets (never trained on), phone simulation already applied where the name says so
   examples/          wav files + spectrogram so you can LISTEN to the data and the phone simulation
-  data_report.json   hours per source, dropped clips and why, chosen columns
+  data_report.json   hours per source, dropped clips and why
   prep_settings.json the settings used; if config.py changes, the next run rebuilds automatically
 
 What happens to each clip: decode -> mono -> 16 kHz -> clean the text -> filters -> tokenize -> stored as
@@ -22,6 +22,7 @@ import json
 import shutil
 import time
 from collections import Counter
+from pathlib import Path
 
 import numpy as np
 
@@ -31,41 +32,31 @@ import config as C
 DROPS = Counter()
 
 
-def inspect_iv(iv_paths):
-    """Print what the IndicVoices files contain, so the right columns can be chosen. Returns (audio, text, category) columns."""
-    import pandas as pd
+def inspect_source(src, paths):
+    """Print what the first training file contains and write example wavs (original + phone-simulated)."""
     import pyarrow.parquet as pq
     import soundfile as sf
 
-    pf = pq.ParquetFile(iv_paths[0])
+    pf = pq.ParquetFile(paths[0])
     schema = pf.schema_arrow
     audio_col = K.find_audio_col(schema)
     str_cols = K.string_cols(schema)
-    text_col = C.IV_TEXT_COL or next(
-        (c for c in ["text", "normalized", "verbatim", "transcription", "transcript", "sentence"] if c in str_cols), None)
-    if not text_col:
-        raise SystemExit(f"Could not auto-detect the text column in {str_cols}; set IV_TEXT_COL in config")
-    category_col = next((c for c in ["task_name", "scenario", "task", "audio_type", "domain"] if c in str_cols), None)
-
-    print("\n================ IndicVoices: what is in the data ================")
-    print("all columns     :", schema.names)
-    print("audio column    :", audio_col)
-    print("text column     :", text_col, "  <- set IV_TEXT_COL in config(_local).py if another column is better")
-    print("category column :", category_col)
-
-    peek = pd.concat([b.to_pandas() for _, b in zip(range(4), pf.iter_batches(500, columns=str_cols))])
-    print("\n--- 3 example rows (all text columns) ---")
-    for _, r in peek.head(3).iterrows():
-        for c in str_cols:
-            print(f"{c:>22}: {str(r[c])[:150]}")
-        print()
-    print("--- short-list columns (candidates for IV_KEEP) ---")
+    print(f"\n================ {src['name']}: what is in the data ================")
+    print("all columns  :", schema.names)
+    print("audio column :", audio_col, "| text column:", src["text_col"])
+    if src["text_col"] not in schema.names:
+        raise SystemExit(f"text_col '{src['text_col']}' is not a column of {paths[0]}")
+    peek = pf.read_row_group(0, columns=str_cols).to_pandas()
+    print("\n--- 5 example texts (raw -> cleaned training label) ---")
+    for t in peek[src["text_col"]].head(5):
+        print("  raw  :", str(t)[:160])
+        print("  label:", K.normalize_text(t)[:160])
     for c in str_cols:
         vc = peek[c].value_counts()
         if 1 < len(vc) <= 30:
             print(f"\n[{c}]\n{vc.to_string()}")
 
-    rows = next(pf.iter_batches(300, columns=[audio_col, text_col])).to_pylist()
+    rows = pf.read_row_group(0, columns=[audio_col, src["text_col"]]).to_pylist()[:200]
     srs, durs = Counter(), []
     for r in rows:
         b = (r[audio_col] or {}).get("bytes")
@@ -81,27 +72,29 @@ def inspect_iv(iv_paths):
     rng = np.random.default_rng(0)
     for i, r in enumerate(rows[:3]):
         y, sr = K.decode_audio(r[audio_col]["bytes"])
-        sf.write(ex / f"indicvoices_{i}_{sr}Hz.wav", y, K.SR)
-        sf.write(ex / f"indicvoices_{i}_phone_sim.wav", K.phone_sim(y, rng), K.SR)
-        (ex / f"indicvoices_{i}.txt").write_text(str(r[text_col]), encoding="utf-8")
+        sf.write(ex / f"{src['name']}_{i}_{sr}Hz.wav", y, K.SR)
+        sf.write(ex / f"{src['name']}_{i}_phone_sim.wav", K.phone_sim(y, rng), K.SR)
+        (ex / f"{src['name']}_{i}.txt").write_text(str(r[src["text_col"]]), encoding="utf-8")
     print(f"\nexample audio written to {ex} (original + phone-simulated): listen to them!")
-    print("==================================================================\n")
-    return audio_col, text_col, category_col
+    print("=" * 68 + "\n")
 
 
 def gen_rows(paths, audio_col, text_col, source, max_hours, keep=None, category_col=None, augment=1, cfg=""):
+    """Yields training rows. The hours are spread evenly over the files (more speakers, more books)."""
     tokenizer = K.load_tokenizer()
-    total = 0.0
-    for y, sr, text, cat in K.iter_clips(paths, audio_col, text_col, keep, category_col):
-        t, ids = K.check_clip(tokenizer, text, len(y) / K.SR)
-        if t is None:
-            DROPS[f"{source}: {ids}"] += 1
-            continue
-        yield {"audio": K.to_int16(y), "text": t, "labels": ids, "length": len(y), "native_sr": sr,
-               "source": source, "category": cat, "augment": augment}
-        total += len(y) / K.SR
-        if total >= max_hours * 3600:
-            return
+    per_file = max_hours * 3600 / len(paths)
+    for p in paths:
+        total = 0.0
+        for y, sr, text, cat in K.iter_clips([p], audio_col, text_col, keep, category_col):
+            t, ids = K.check_clip(tokenizer, text, len(y) / K.SR)
+            if t is None:
+                DROPS[f"{source}: {ids}"] += 1
+                continue
+            yield {"audio": K.to_int16(y), "text": t, "labels": ids, "length": len(y), "native_sr": sr,
+                   "source": source, "category": cat, "augment": augment}
+            total += len(y) / K.SR
+            if total >= per_file:
+                break
 
 
 def build(name, **kw):
@@ -122,6 +115,7 @@ def summary(ds, by):
 
 
 def load_rows(tokenizer, paths, audio_col, text_col):
+    """All usable clips of (small) files: [(audio, text, native sr)]."""
     rows = []
     for y, sr, text, _ in K.iter_clips(paths, audio_col, text_col):
         t, _ = K.check_clip(tokenizer, text, len(y) / K.SR)
@@ -130,17 +124,36 @@ def load_rows(tokenizer, paths, audio_col, text_col):
     return rows
 
 
-def sample_rows(rows, n, seed, phone, exclude=()):
-    """n random clips; phone=True -> phone-simulate with a fixed seed per clip (identical every run)."""
-    rng, exclude = np.random.default_rng(seed), set(exclude)
-    idx = [int(i) for i in rng.permutation(len(rows)) if int(i) not in exclude][:n]
-    out = []
-    for i in idx:
-        y, t, sr = rows[i]
-        if phone and sr > 8000:
-            y = K.phone_sim(y, np.random.default_rng(seed * 100003 + i))
-        out.append((y, t, sr))
-    return out, idx
+def load_random_rows(tokenizer, paths, text_col, n, seed):
+    """n random usable clips from (big) files, decoding only the clips that are picked."""
+    import pyarrow as pa
+    import pyarrow.parquet as pq
+    table = pa.concat_tables([pq.read_table(p, columns=["audio", text_col]) for p in paths])
+    texts = table.column(text_col).to_pylist()
+    audio = table.column("audio")
+    rows = []
+    for i in np.random.default_rng(seed).permutation(len(texts)):
+        b = (audio[int(i)].as_py() or {}).get("bytes")
+        if not b:
+            continue
+        y, sr = K.decode_audio(b)
+        t, _ = K.check_clip(tokenizer, texts[int(i)], len(y) / K.SR)
+        if t is not None:
+            rows.append((y, t, sr))
+            if len(rows) >= n:
+                break
+    return rows
+
+
+def simulate(row, seed):
+    """(audio, text, sr) -> the same clip through a simulated phone line (fixed seed = identical every run)."""
+    y, t, sr = row
+    return (K.phone_sim(y, np.random.default_rng(seed)) if sr > 8000 else y), t, sr
+
+
+def sample_rows(rows, n, seed, phone):
+    idx = [int(i) for i in np.random.default_rng(seed).permutation(len(rows))][:n]
+    return [simulate(rows[i], seed * 100003 + i) if phone else rows[i] for i in idx]
 
 
 def save_rows(tokenizer, rows, path, source):
@@ -151,7 +164,7 @@ def save_rows(tokenizer, rows, path, source):
         "length": [len(y) for y, _, _ in rows], "native_sr": [sr for _, _, sr in rows],
         "source": [source] * len(rows), "category": [""] * len(rows), "augment": [0] * len(rows),
     }, features=K.features()).save_to_disk(str(path))
-    print(f"  {path.name:22s} {len(rows):5d} clips  {sum(len(r[0]) for r in rows) / K.SR / 3600:.2f} h")
+    print(f"  {path.name:24s} {len(rows):5d} clips  {sum(len(r[0]) for r in rows) / K.SR / 3600:.2f} h")
 
 
 def phone_sim_picture(rows, ex_dir):
@@ -167,7 +180,8 @@ def phone_sim_picture(rows, ex_dir):
     sf.write(ex_dir / "banspeech_clean.wav", y_clean, K.SR)
     sf.write(ex_dir / "banspeech_phone_sim.wav", y_phone, K.SR)
     panels = [("clean", y_clean), ("phone-simulated", y_phone)]
-    real = sorted(C.MY_AUDIO_DIR.glob("*call*")) if C.MY_AUDIO_DIR.is_dir() else []
+    my = Path(C.MY_AUDIO_DIR)
+    real = sorted(my.glob("*call*")) if my.is_dir() else []
     if real:
         y_real, _ = librosa.load(str(real[0]), sr=K.SR, offset=10, duration=6)
         panels.append(("real call: " + real[0].name, y_real))
@@ -186,6 +200,7 @@ def phone_sim_picture(rows, ex_dir):
 
 
 def main(args):
+    import pyarrow.parquet as pq
     from datasets import concatenate_datasets
     from huggingface_hub import list_repo_files
 
@@ -199,66 +214,59 @@ def main(args):
         print("Data settings changed since the last build -> rebuilding.")
     t_start = time.time()
 
-    print("\n[1/5] Download IndicVoices Bengali")
-    iv_train_paths = K.download(C.IV_REPO, C.IV_TRAIN_FILES)
-    iv_valid_paths = K.download(C.IV_REPO, C.IV_VALID_FILES)
-    audio_col, text_col, category_col = inspect_iv(iv_train_paths)
     if args.inspect:
+        src = C.TRAIN_SOURCES[0]
+        inspect_source(src, K.download(src["repo"], src["files"][:1]))
         return
 
     for d in ("train", "dev", "tests", "_cache"):
         shutil.rmtree(out / d, ignore_errors=True)
     settings_file.unlink(missing_ok=True)
     tokenizer = K.load_tokenizer()
-    report = {"iv_columns": {"audio": audio_col, "text": text_col, "category": category_col}}
+    report = {"dropped": {}}
 
-    print(f"\n[2/5] Build IndicVoices training clips (up to {C.IV_MAX_TRAIN_HOURS} h)")
-    DROPS.clear()
-    t0 = time.time()
-    iv_train = build("iv_train", paths=iv_train_paths, audio_col=audio_col, text_col=text_col, source="indicvoices",
-                     max_hours=C.IV_MAX_TRAIN_HOURS, keep=C.IV_KEEP, category_col=category_col)
-    print(f"  built in {(time.time() - t0) / 60:.1f} min")
-    print(summary(iv_train, "source"))
-    if category_col:
-        print(summary(iv_train, "category"))
-    print(summary(iv_train, "native_sr"))
-    print("  dropped:", dict(DROPS))
-    report["dropped"] = dict(DROPS)
-    parts = [iv_train]
-
-    print("\n[3/5] Clean mix: SUBAK.KO")
-    if C.CLEAN_MIX_RATIO > 0:
-        target = hours(iv_train) * C.CLEAN_MIX_RATIO / (1 - C.CLEAN_MIX_RATIO)
-        print(f"  target {target:.1f} h ({C.CLEAN_MIX_RATIO:.0%} of the training set)")
-        sk_paths = K.download(C.SUBAKKO_REPO, C.SUBAKKO_FILES)
-        import pyarrow.parquet as pq
+    print("\n[1/4] Training data")
+    parts = []
+    for n, src in enumerate(C.TRAIN_SOURCES):
+        print(f"\n--- {src['name']}: {len(src['files'])} files from {src['repo']}, up to {src['hours']} h")
+        paths = K.download(src["repo"], src["files"])
+        if n == 0:
+            inspect_source(src, paths)
         DROPS.clear()
-        clean = build("subakko", paths=sk_paths, audio_col=K.find_audio_col(pq.ParquetFile(sk_paths[0]).schema_arrow),
-                      text_col="transcription", source="subakko_clean", max_hours=target, augment=2)
-        print(summary(clean, "source"))
+        t0 = time.time()
+        ds = build(src["name"], paths=paths, audio_col=K.find_audio_col(pq.ParquetFile(paths[0]).schema_arrow),
+                   text_col=src["text_col"], source=src["name"], max_hours=src["hours"], keep=src.get("keep"),
+                   category_col=src.get("category_col"), augment=1 if src.get("phone_sim", True) else 2)
+        print(f"  built in {(time.time() - t0) / 60:.1f} min: {len(ds)} clips, {hours(ds):.1f} h")
+        if src.get("category_col"):
+            print(summary(ds, "category"))
+        print(summary(ds, "native_sr"))
         print("  dropped:", dict(DROPS))
         report["dropped"].update(DROPS)
-        if hours(clean) < 0.9 * target:
-            print("  NOTE: fewer clean hours than the target; add more SUBAKKO_FILES for an exact ratio")
-        parts.append(clean)
+        if hours(ds) < 0.9 * src["hours"]:
+            print(f"  NOTE: only {hours(ds):.1f} of {src['hours']} h. Add more files to this source for the full amount.")
+        parts.append(ds)
     train = concatenate_datasets(parts).shuffle(seed=C.SEED)
     train.save_to_disk(str(out / "train"))
     report["train"] = summary(train, "source").reset_index().to_dict("records")
     report["train_by_native_sr"] = summary(train, "native_sr").reset_index().to_dict("records")
     report["train_hours"] = round(hours(train), 2)
     report["train_clips"] = len(train)
-    print(f"  TRAIN: {len(train)} clips, {hours(train):.1f} h -> {out / 'train'}")
-    del train, parts, iv_train
+    print(f"\n  TRAIN: {len(train)} clips, {hours(train):.1f} h -> {out / 'train'}")
+    del train, parts
     shutil.rmtree(out / "_cache", ignore_errors=True)
 
-    print("\n[4/5] Dev + test sets")
-    iv_valid = load_rows(tokenizer, iv_valid_paths, audio_col, text_col)
-    print(f"  IndicVoices valid: {len(iv_valid)} usable clips")
-    dev_rows, dev_idx = sample_rows(iv_valid, C.DEV_CLIPS, seed=1, phone=True)
-    ivt_rows, _ = sample_rows(iv_valid, C.TEST_CLIPS_PER_SPLIT, seed=1, phone=True, exclude=dev_idx)
-    del iv_valid
-    save_rows(tokenizer, dev_rows, out / "dev", "dev_iv_phone")
+    print("\n[2/4] Dev set (SUBAK.KO validation: half clean, half phone)")
+    dev = load_random_rows(tokenizer, K.download(C.SUBAKKO_REPO, C.SUBAKKO_VALID_FILES), "transcription",
+                           C.DEV_CLIPS, seed=1)
+    half = len(dev) // 2
+    dev = dev[:half] + [simulate(r, 1000 + i) for i, r in enumerate(dev[half:])]
+    save_rows(tokenizer, dev, out / "dev", "dev_subakko_mixed")
+    del dev
 
+    print("\n[3/4] Test sets")
+    sk_test = load_random_rows(tokenizer, K.download(C.SUBAKKO_REPO, C.SUBAKKO_TEST_FILES), "transcription",
+                               C.TEST_CLIPS_PER_SPLIT, seed=2)
     bs_files = {f.split("/")[-1].split("-")[0]: f for f in list_repo_files(C.BANSPEECH_REPO, repo_type="dataset")
                 if f.startswith("data/") and f.endswith(".parquet")}
     cache = {}
@@ -268,30 +276,35 @@ def main(args):
         for k, s in enumerate(splits):
             if s not in cache:
                 cache[s] = load_rows(tokenizer, K.download(C.BANSPEECH_REPO, [bs_files[s]]), "audio", "transcription")
-            rows += sample_rows(cache[s], C.TEST_CLIPS_PER_SPLIT, seed=seed + k, phone=phone)[0]
+            rows += sample_rows(cache[s], C.TEST_CLIPS_PER_SPLIT, seed=seed + k, phone=phone)
         return rows
 
     tests = {
-        "test_iv_phone": ivt_rows,
-        "test_bs_spont_phone": banspeech(C.BANSPEECH_SPONT, phone=True),
+        "test_subakko_clean": sk_test,                                                  # standard Bangla, studio
+        "test_subakko_phone": [simulate(r, 5000 + i) for i, r in enumerate(sk_test)],   # the same clips, phone line
+        "test_bs_spont_phone": banspeech(C.BANSPEECH_SPONT, phone=True),                # conversation, phone line
         "test_bs_spont_clean": banspeech(C.BANSPEECH_SPONT, phone=False),
-        "test_bs_clean": banspeech(C.BANSPEECH_CLEAN, phone=False),
+        "test_bs_medicine_phone": banspeech(C.BANSPEECH_MEDICINE, phone=True),          # medical words, phone line
+        "test_bs_clean": banspeech(C.BANSPEECH_CLEAN, phone=False),                     # news + audiobooks
     }
     for name, rows in tests.items():
         save_rows(tokenizer, rows, out / "tests" / name, name)
     report["tests"] = {k: len(v) for k, v in tests.items()}
 
-    print("\n[5/5] Phone simulation example")
+    print("\n[4/4] Phone simulation example")
     phone_sim_picture(tests["test_bs_spont_clean"], out / "examples")
 
     (out / "data_report.json").write_text(json.dumps(report, ensure_ascii=False, indent=2, default=str), encoding="utf-8")
     settings_file.write_text(json.dumps(settings, ensure_ascii=False, indent=2), encoding="utf-8")   # marks "done"
+    if C.DELETE_RAW_AFTER_PREP:
+        shutil.rmtree(C.raw_dir(), ignore_errors=True)
+        print(f"deleted downloads in {C.raw_dir()} (DELETE_RAW_AFTER_PREP)")
     print(f"\nData ready in {out} ({(time.time() - t_start) / 60:.1f} min). Report: {out / 'data_report.json'}")
 
 
 def parser():
     p = K.base_parser("Step 1: download + prepare data")
-    p.add_argument("--inspect", action="store_true", help="only download + show what is in IndicVoices, then stop")
+    p.add_argument("--inspect", action="store_true", help="only download one training file + show what is in it")
     p.add_argument("--force", action="store_true", help="rebuild even if prepared data exists")
     return p
 
